@@ -6851,7 +6851,7 @@ body.v3-on #spv-detail-context,body.v3-on #export,body.v3-on .workspace-tabs{dis
 #spv-detail-v3 .v3-kpi strong.down{color:#087d67}
 #spv-detail-v3 .v3-card{min-width:0;padding:16px 18px;border:1px solid #d7e3ed;border-radius:10px;background:#fff}
 #spv-detail-v3 .v3-trend-wide{margin-bottom:14px}
-#spv-detail-v3 .v3-trend-wide .v3-chart svg{height:250px}
+#spv-detail-v3 .v3-trend-wide .v3-chart svg{height:auto}
 #spv-detail-v3 .v3-card h3{margin:0;color:#173f5e;font-size:14px}
 #spv-detail-v3 .v3-card .sub{margin:4px 0 12px;color:#7b8fa1;font-size:11px;line-height:1.5}
 #spv-detail-v3 .v3-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -7007,11 +7007,11 @@ body.v3-on #spv-detail-context,body.v3-on #export,body.v3-on .workspace-tabs{dis
 #spv-detail-v3 .v3-table.v3-month-table th:first-child,
 #spv-detail-v3 .v3-table.v3-month-table td:first-child{text-align:left}
 
-#spv-detail-v3 .v3-stock-top{display:grid;gap:6px;margin-top:10px}
-#spv-detail-v3 .v3-stock-top>div{display:grid;grid-template-columns:60px minmax(0,1fr) 54px;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;background:#f8fbfe;font-size:11.5px}
-#spv-detail-v3 .v3-stock-top span{color:#74899b}
-#spv-detail-v3 .v3-stock-top b{color:#2b4a63;font-weight:600;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
-#spv-detail-v3 .v3-stock-top i{color:#7b8fa1;font-style:normal;text-align:right;font-size:10.5px;font-variant-numeric:tabular-nums}
+#spv-detail-v3 .v3-stock-top,#spv-detail-v3 .v3-bond-top{display:grid;gap:6px;margin-top:10px}
+#spv-detail-v3 .v3-stock-top>div,#spv-detail-v3 .v3-bond-top>div{display:grid;grid-template-columns:60px minmax(0,1fr) 54px;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;background:#f8fbfe;font-size:11.5px}
+#spv-detail-v3 .v3-stock-top span,#spv-detail-v3 .v3-bond-top span{color:#74899b}
+#spv-detail-v3 .v3-stock-top b,#spv-detail-v3 .v3-bond-top b{color:#2b4a63;font-weight:600;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+#spv-detail-v3 .v3-stock-top i,#spv-detail-v3 .v3-bond-top i{color:#7b8fa1;font-style:normal;text-align:right;font-size:10.5px;font-variant-numeric:tabular-nums}
 
 #spv-detail-v3 .v3-fundcat-table{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}
 #spv-detail-v3 .v3-fundcat-table th{padding:6px 3px;border-bottom:1px solid #dbe7ef;background:#f4f9fd;color:#5b738a;font-size:10px;font-weight:600;text-align:right;white-space:nowrap}
@@ -7279,15 +7279,17 @@ function snapshot(id,start,end){
 
   var equityFunds=funds.filter(function(x){return /股票/.test(x.l1n)});
   var bondFunds=funds.filter(function(x){return /债券/.test(x.l1n)});
+  var otherFunds=funds.filter(function(x){return !/股票|债券|货币/.test(x.l1n)});
   var eqClose=st.stockClose+sum(equityFunds,function(x){return x.close});
   var eqOpen=st.stockOpen+sum(equityFunds,function(x){return x.open});
   var eqIncome=sum(stocks,function(x){return x.total})+sum(equityFunds,function(x){return x.total});
   var bdClose=sum(bondFunds,function(x){return x.close});
   var bdOpen=sum(bondFunds,function(x){return x.open});
   var bdIncome=sum(bondFunds,function(x){return x.total});
-  var cashClose=nav-eqClose-bdClose;
-  var cashOpen=opening-eqOpen-bdOpen;
-  var cashIncome=total-eqIncome-bdIncome-other;
+  var otherAssetsClose=sum(otherFunds,function(x){return x.close}),otherAssetsOpen=sum(otherFunds,function(x){return x.open}),otherAssetsIncome=sum(otherFunds,function(x){return x.total});
+  var cashClose=nav-eqClose-bdClose-otherAssetsClose;
+  var cashOpen=opening-eqOpen-bdOpen-otherAssetsOpen;
+  var cashIncome=total-eqIncome-bdIncome-otherAssetsIncome-other;
 
   var all=funds.map(function(x){return {name:x.name,type:'基金',sub:x.l1n,close:x.close,open:x.open,total:x.total,retPct:x.retPct}})
     .concat(stocks.map(function(x){return {name:x.name,type:'股票',sub:x.industry,close:x.close,open:x.open,total:x.total,retPct:x.retPct}}))
@@ -7311,7 +7313,7 @@ function snapshot(id,start,end){
   var indMap={};
   stocks.forEach(function(x){indMap[x.industry]=(indMap[x.industry]||0)+x.close});
   var industry=Object.keys(indMap).map(function(k){var a=st.stockClose?indMap[k]/st.stockClose*100:0,b=BM_INDUSTRY[k]||0;return {name:k,value:indMap[k],actual:a,bm:b,dev:a-b}}).sort(function(a,b){return b.actual-a.actual});
-  var eqPct=nav?eqClose/nav*100:0,bdPct=nav?bdClose/nav*100:0,cashPct=nav?cashClose/nav*100:0;
+  var eqPct=nav?eqClose/nav*100:0,bdPct=nav?bdClose/nav*100:0,cashPct=nav?cashClose/nav*100:0,otherAssetsPct=nav?otherAssetsClose/nav*100:0;
   var top5Rate=nav?top5/nav*100:0,top10Rate=nav?top10/nav*100:0;
   var maxFund=funds.length?Math.max.apply(null,funds.map(function(x){return x.close}))/fundClose*100:0;
 
@@ -7336,6 +7338,7 @@ function snapshot(id,start,end){
     cash:st.cash,cashOpen:st.cashOpen,cashIncome:st.cashIncome,other:other,
     series:series,met:met,equity:{open:eqOpen,close:eqClose,income:eqIncome,pct:eqPct},
     bond:{open:bdOpen,close:bdClose,income:bdIncome,pct:bdPct},
+    otherAssets:{open:otherAssetsOpen,close:otherAssetsClose,income:otherAssetsIncome,pct:otherAssetsPct},
     cashCat:{open:cashOpen,close:cashClose,income:cashIncome,pct:cashPct},
     top5:top5,top10:top10,top5Rate:top5Rate,top10Rate:top10Rate,maxFund:maxFund,
     all:all,industry:industry,fundTypes:fundTypesL2,fundTypesL1:fundTypesL1,fundTypesL2:fundTypesL2,sources:sources,stockSources:stockSources,stockIndustry:stockIndustry,attention:attention,
@@ -7348,7 +7351,8 @@ function snapshot(id,start,end){
 /* ---------- charts ---------- */
 function navChart(snap){
   var sr=snap.series,d=sr.dates,N=d.length;
-  var W=960,H=250,L=38,R=8,T=14,B=26;
+  var host=document.getElementById('v3-body');
+  var W=Math.max(760,Math.round(host&&host.clientWidth?host.clientWidth-40:1200)),H=250,L=38,R=8,T=14,B=26;
   var vals=sr.cum.concat(sr.benchCum).concat([0]);
   var lo=Math.min.apply(null,vals),hi=Math.max.apply(null,vals);
   var pad=Math.max((hi-lo)*.18,.25);lo-=pad;hi+=pad;
@@ -7398,24 +7402,32 @@ function navChart(snap){
 
 function ddChart(snap){
   var sr=snap.series,d=sr.dates,N=d.length;
-  var W=760,H=150,L=48,R=14,T=12,B=22;
+  var host=document.getElementById('v3-body');
+  var W=Math.max(760,Math.round(host&&host.clientWidth?host.clientWidth-40:1200)),H=200,L=48,R=14,T=12,B=26;
   var lo=Math.min.apply(null,sr.dd)*1.15||-1,hi=0;
   function x(i){return L+(N>1?i*(W-L-R)/(N-1):0)}
   function y(v){return T+(hi-v)/(hi-lo)*(H-T-B)}
   var area='M'+x(0).toFixed(1)+' '+y(0).toFixed(1)+' ';
   for(var i=0;i<N;i++)area+='L'+x(i).toFixed(1)+' '+y(sr.dd[i]).toFixed(1)+' ';
   area+='L'+x(N-1).toFixed(1)+' '+y(0).toFixed(1)+' Z';
-  var grid='';
-  for(var k=0;k<=2;k++){
-    var v=lo+(hi-lo)*k/2,yy=y(v);
-    grid+='<line x1="'+L+'" y1="'+yy.toFixed(1)+'" x2="'+(W-R)+'" y2="'+yy.toFixed(1)+'" stroke="#e2ebf3" stroke-width="1"/>';
-    grid+='<text x="'+(L-6)+'" y="'+(yy+4).toFixed(1)+'" text-anchor="end" font-size="10" fill="#8a9dad">'+v.toFixed(1)+'%</text>';
+  var tickCount=8,ticks=[];
+  for(var ti=0;ti<tickCount;ti++){
+    var tickIndex=Math.round((N-1)*ti/(tickCount-1));
+    if(ticks.indexOf(tickIndex)<0)ticks.push(tickIndex);
   }
-  var ticks=[0,Math.floor((N-1)/2),N-1];
-  var xlab=ticks.map(function(t){return '<text x="'+x(t).toFixed(1)+'" y="'+(H-4)+'" text-anchor="'+(t===0?'start':t===N-1?'end':'middle')+'" font-size="10" fill="#8a9dad">'+md(d[t])+'</text>'}).join('');
+  var grid='';
+  for(var k=0;k<=3;k++){
+    var v=lo+(hi-lo)*k/3,yy=y(v);
+    grid+='<line x1="'+L+'" y1="'+yy.toFixed(1)+'" x2="'+(W-R)+'" y2="'+yy.toFixed(1)+'" stroke="#e2ebf3" stroke-width="1"/>';
+    grid+='<text x="'+(L-6)+'" y="'+(yy+4).toFixed(1)+'" text-anchor="end" font-size="10" fill="#8a9dad">'+v.toFixed(2)+'%</text>';
+  }
+  ticks.forEach(function(t){var xx=x(t);
+    grid+='<line x1="'+xx.toFixed(1)+'" y1="'+T+'" x2="'+xx.toFixed(1)+'" y2="'+(H-B)+'" stroke="#edf2f6" stroke-width="1" stroke-dasharray="3 4"/>';
+  });
+  var xlab=ticks.map(function(t){return '<text x="'+x(t).toFixed(1)+'" y="'+(H-6)+'" text-anchor="'+(t===0?'start':t===N-1?'end':'middle')+'" font-size="10" fill="#8a9dad">'+md(d[t])+'</text>'}).join('');
   chartStore.dd={dates:d,series:sr.dd,bench:sr.bdd,lo:lo,hi:hi,W:W,H:H,L:L,R:R,T:T,B:B,mode:'dd'};
   return '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="回撤走势" data-v3-chart="dd">'+grid+
-    '<path d="'+area+'" fill="rgba(8,125,103,.16)" stroke="#0b8a63" stroke-width="1.4"/>'+xlab+
+    '<path d="'+area+'" fill="rgba(8,125,103,.16)" stroke="#0b8a63" stroke-width="1.8" stroke-linejoin="round"/>'+xlab+
     '<rect x="'+L+'" y="'+T+'" width="'+(W-L-R)+'" height="'+(H-T-B)+'" fill="#fff" fill-opacity="0" pointer-events="all"/>'+
     '<g class="v3-hover" style="display:none"><line class="v3-hover-line" x1="'+L+'" y1="'+T+'" x2="'+L+'" y2="'+(H-B)+'"/><circle class="v3-hover-dot-p" r="3.6"/><circle class="v3-hover-dot-b" r="3"/></g>'+
   '</svg>';
@@ -7438,12 +7450,6 @@ function allocRows(rows,showBm){
 
 function stackedBar(rows){
   return '<div class="v3-stack">'+rows.map(function(x){return '<i style="width:'+Math.max(0,x.pct).toFixed(2)+'%;background:'+x.color+'"></i>'}).join('')+'</div><div class="v3-stack-legend">'+rows.map(function(x){return '<span><i style="background:'+x.color+'"></i>'+esc(x.label||x.name)+' '+x.pct.toFixed(1)+'%</span>'}).join('')+'</div>';
-}
-
-function allocNote(snap){
-  var stockPct=snap.nav?snap.stockClose/snap.nav*100:0;
-  var fundEq=Math.max(0,snap.equity.pct-stockPct);
-  return '<div class="v3-note" style="margin-top:10px">穿透后权益 '+snap.equity.pct.toFixed(1)+'%，其中直接股票 '+stockPct.toFixed(1)+'%、权益基金 '+fundEq.toFixed(1)+'%；股票市值 '+moneyShort(snap.stockClose)+'，是权益暴露的主要来源。</div>';
 }
 
 function kpi(label,value,accent,small,valueCls){
@@ -7515,15 +7521,16 @@ function renderSummary(snap){
   var alloc=[
     {label:'权益',pct:snap.equity.pct,bm:POLICY.equity,dev:snap.equity.pct-POLICY.equity,color:'#2f83b8'},
     {label:'债券',pct:snap.bond.pct,bm:POLICY.bond,dev:snap.bond.pct-POLICY.bond,color:'#d3a125'},
-    {label:'现金及货币',pct:snap.cashCat.pct,bm:POLICY.cash,dev:snap.cashCat.pct-POLICY.cash,color:'#9fb2c2'}
+    {label:'现金及货币',pct:snap.cashCat.pct,bm:POLICY.cash,dev:snap.cashCat.pct-POLICY.cash,color:'#9fb2c2'},
+    {label:'其他资产',pct:snap.otherAssets.pct,bm:0,dev:snap.otherAssets.pct,color:'#8f79a8'}
   ];
   return '<h2 class="v3-h2">综合概览 <span class="v3-chip">区间 '+snap.days+' 天</span><span class="v3-chip warn">示例数据</span></h2>'+
     '<p class="v3-sub">先看整体表现、风险与结构，再下钻到收益、持仓和底层资产。</p>'+
     '<div class="v3-kpis">'+kpis+'</div>'+
     '<div class="v3-card v3-trend-wide"><h3>累计收益走势</h3><div class="v3-chart" style="margin-top:10px">'+navChart(snap)+'</div><div class="v3-legend"><span><i style="background:#d33c43"></i>组合</span><span><i style="background:#8397aa"></i>模拟基准</span><span><i style="background:rgba(47,131,184,.25)"></i>超额</span></div></div>'+
     '<div class="v3-grid-2 even">'+
-      '<div class="v3-card"><h3>穿透后大类配置</h3><p class="sub">按基金一级分类估算底层资产；当前展示实际配置，基准接入后再开启对比。</p>'+stackedBar(alloc)+allocRows(alloc,false)+allocNote(snap)+'</div>'+
-      '<div class="v3-card"><h3>收益构成</h3><p class="sub">按资产来源逐项累加到区间收益金额；单位：万元。基金含货币基金，现金为未投资现金。</p><div class="v3-chart">'+waterfallChart(snap)+'</div><div class="v3-note">合计 '+signedMoney(snap.total)+' ＝ 期末净资产 − 期初净资产（按区间收益率反推）。贡献占比：基金 '+(snap.total?snap.fundIncome/snap.total*100:0).toFixed(1)+'% / 股票 '+(snap.total?snap.stockIncome/snap.total*100:0).toFixed(1)+'% / 未投资现金 '+(snap.total?snap.cashIncome/snap.total*100:0).toFixed(1)+'%。</div></div>'+
+      '<div class="v3-card"><h3>穿透后大类配置</h3><p class="sub">按基金一级分类估算底层资产；当前展示实际配置，基准接入后再开启对比。</p>'+stackedBar(alloc)+allocRows(alloc,false)+'</div>'+
+      '<div class="v3-card"><h3>收益构成</h3><p class="sub">按资产来源逐项累加到区间收益金额；单位：万元。基金含货币基金，现金为未投资现金。</p><div class="v3-chart">'+waterfallChart(snap)+'</div></div>'+
     '</div>';
 }
 
@@ -7539,10 +7546,16 @@ function sStockTop(snap){
   var html=row('主要拉动',best[0])+row('',best[1])+row('主要拖累',worst[0]);
   return '<div class="v3-stock-top">'+(html||'<div><span>—</span><b>—</b><i>—</i></div>')+'</div>';
 }
-function sIndustryNote(snap){
-  var arr=snap.stockIndustry.slice();
-  var best=arr.filter(function(x){return x.value>0}).slice(0,2),worst=arr.filter(function(x){return x.value<0}).sort(function(a,b){return a.value-b.value}).slice(0,1);
-  return '主要拉动行业：'+(best.length?best.map(function(x){return esc(x.name)+' '+signedMoney(x.value)}).join('、'):'—')+'；主要拖累：'+(worst.length?worst.map(function(x){return esc(x.name)+' '+signedMoney(x.value)}).join('、'):'—')+'。';
+function sBondTop(rows,income){
+  var arr=rows.slice().sort(function(a,b){return b.total-a.total});
+  var best=arr.filter(function(x){return x.total>0}).slice(0,2),worst=arr.filter(function(x){return x.total<0}).sort(function(a,b){return a.total-b.total}).slice(0,1);
+  function row(label,x){
+    if(!x)return '';
+    var share=income?x.total/income*100:0;
+    return '<div><span>'+label+'</span><b>'+esc(x.name)+' '+signedMoney(x.total)+'</b><i>'+(share>=0?'+':'')+share.toFixed(1)+'%</i></div>';
+  }
+  var html=row('主要贡献',best[0])+row('',best[1])+row('最大拖累',worst[0]);
+  return '<div class="v3-bond-top">'+(html||'<div><span>—</span><b>—</b><i>—</i></div>')+'</div>';
 }
 function monthMatrix(snap){
   var full=fullSeries(snap.s),years={},i;
@@ -7593,12 +7606,16 @@ function renderReturns(snap){
   var fbars=fview==='status'?fstat:fsrc;
   var ftitle=fview==='status'?'基金收益状态':'基金收益来源';
   var fsub=fview==='status'?'浮动盈亏 ＋ 已实现收益 ＝ 基金区间收益。':'持有涨跌 ＋ 买入交易 ＋ 卖出交易 ＋ 现金分红 ＝ 基金区间收益。';
-  var fnote=fview==='status'?'合计 '+signedMoney(snap.fundIncome)+'；浮动盈亏含买入交易，已实现含卖出交易与分红。':'合计 '+signedMoney(snap.fundIncome)+'；与「基金资产」页合计一致。';
+  var fnote=fview==='status'?'合计 '+signedMoney(snap.fundIncome)+'；浮动盈亏含买入交易，已实现含卖出交易与分红。':'';
   var ftabs='<div class="v3-mini-tabs">'+[['status','按收益状态'],['source','按收益来源']].map(function(x){return '<button type="button" data-v3-fund="'+x[0]+'" class="'+(fview===x[0]?'active':'')+'">'+x[1]+'</button>'}).join('')+'</div>';
   var mm=monthMatrix(snap);
   var mview=stateV3.monthView||'ret';
   var mtabs='<div class="v3-mini-tabs">'+[['ret','组合'],['bench','基准'],['excess','超额']].map(function(x){return '<button type="button" data-v3-month="'+x[0]+'" class="'+(mview===x[0]?'active':'')+'">'+x[1]+'</button>'}).join('')+'</div>';
-  return '<h2 class="v3-h2">收益分析</h2><p class="v3-sub">钱从哪来：先看资产来源，再看基金、股票的持有/交易/分红，最后看月度矩阵与回撤。</p>'+
+  var bRows=DEMO_BONDS.slice();
+  var bInterest=sum(bRows,function(x){return x.interest}),bPrice=sum(bRows,function(x){return x.price}),bTrade=sum(bRows,function(x){return x.trade});
+  var bIncome=bInterest+bPrice+bTrade;
+  var bondCard='<div class="v3-card"><h3>债券收益分析</h3><p class="sub">票息收入 ＋ 市价变动 ＋ 买卖价差 ＝ 债券区间收益；债券基金与债券 ETF 计入“基金”口径。</p>'+signedBars([{label:'票息收入',value:bInterest},{label:'市价变动',value:bPrice},{label:'买卖价差',value:bTrade},{label:'合计',value:bIncome,total:true}])+sBondTop(bRows,bIncome)+'</div>';
+  return '<h2 class="v3-h2">收益分析</h2><p class="v3-sub">钱从哪来：先看资产来源，再看基金、股票的持有/交易/分红与债券收益拆解，最后看月度矩阵与回撤。</p>'+
     '<div class="v3-stats">'+
       '<div class="v3-stat"><span>区间收益金额（元）</span><strong>'+num(snap.total,2)+'</strong></div>'+
       '<div class="v3-stat"><span>基金贡献（含货币）</span><strong class="'+cls(snap.fundIncome)+'">'+num(snap.fundIncome,2)+'</strong></div>'+
@@ -7607,11 +7624,11 @@ function renderReturns(snap){
     '</div>'+
     '<div class="v3-grid-2 even">'+
       '<div class="v3-card"><h3>专户收益来源</h3><p class="sub">基金（含货币）/ 股票 / 未投资现金，合计等于区间收益金额。</p>'+signedBars(src)+'</div>'+
-      '<div class="v3-card"><div class="v3-card-head"><h3>'+ftitle+'</h3>'+ftabs+'</div><p class="sub">'+fsub+'</p>'+signedBars(fbars)+'<div class="v3-note">'+fnote+'</div></div>'+
+      '<div class="v3-card"><div class="v3-card-head"><h3>'+ftitle+'</h3>'+ftabs+'</div><p class="sub">'+fsub+'</p>'+signedBars(fbars)+(fnote?'<div class="v3-note">'+fnote+'</div>':'')+'</div>'+
     '</div>'+
     '<div class="v3-grid-2 even">'+
-      '<div class="v3-card"><h3>股票收益来源</h3><p class="sub">持仓涨跌 ＋ 买入交易 ＋ 卖出交易 ＋ 现金分红 ＝ 股票区间收益；演示数据按行业给出模拟分红，交易收益按买卖成交额比例拆分。</p>'+signedBars(snap.stockSources)+sStockTop(snap)+'<div class="v3-note">合计 '+signedMoney(snap.stockIncome)+'；占比为个股收益 ÷ 股票区间收益。</div></div>'+
-      '<div class="v3-card"><div class="v3-card-head"><h3>股票行业贡献</h3><span class="v3-chip">申万一级行业</span></div><p class="sub">按申万一级行业汇总区间收益，识别主要拉动与拖累。</p>'+signedBars(snap.stockIndustry)+'<div class="v3-note">'+sIndustryNote(snap)+'</div></div>'+
+      '<div class="v3-card"><h3>股票收益来源</h3><p class="sub">持仓涨跌 ＋ 买入交易 ＋ 卖出交易 ＋ 现金分红 ＝ 股票区间收益；演示数据按行业给出模拟分红，交易收益按买卖成交额比例拆分。</p>'+signedBars(snap.stockSources)+sStockTop(snap)+'</div>'+
+      bondCard+
     '</div>'+
     '<div class="v3-card"><div class="v3-card-head"><h3>月度收益率</h3>'+mtabs+'</div><p class="sub">按年份 × 12 个月展示当前数据区间内的月度收益；蓝色底为当前筛选区间；基准为模拟。</p>'+mm+'<div class="v3-note">当前数据区间自 '+snap.s.start+' 起；空白为区间外或未来月份，接入更早净值后自动扩展年份行。</div></div>'+
     '<div class="v3-card"><h3>回撤走势</h3><p class="sub">组合最大回撤 '+pct(snap.met.mdd)+'，模拟基准 '+pct(snap.met.bmdd)+'；鼠标滑过查看每日数据。</p><div class="v3-chart">'+ddChart(snap)+'</div><div class="v3-note">回撤按区间内净值高点回落的幅度计算。</div></div>';
@@ -7640,7 +7657,8 @@ function renderAllocation(snap){
   var alloc=[
     {label:'权益',pct:snap.equity.pct,bm:POLICY.equity,dev:snap.equity.pct-POLICY.equity,color:'#2f83b8'},
     {label:'债券',pct:snap.bond.pct,bm:POLICY.bond,dev:snap.bond.pct-POLICY.bond,color:'#d3a125'},
-    {label:'现金及货币',pct:snap.cashCat.pct,bm:POLICY.cash,dev:snap.cashCat.pct-POLICY.cash,color:'#9fb2c2'}
+    {label:'现金及货币',pct:snap.cashCat.pct,bm:POLICY.cash,dev:snap.cashCat.pct-POLICY.cash,color:'#9fb2c2'},
+    {label:'其他资产',pct:snap.otherAssets.pct,bm:0,dev:snap.otherAssets.pct,color:'#8f79a8'}
   ];
   var fcat=stateV3.fundCat||'l2';
   var fcats=fcat==='l1'?snap.fundTypesL1:snap.fundTypesL2;
@@ -7651,7 +7669,8 @@ function renderAllocation(snap){
   var detail=[
     {label:'权益',open:snap.equity.open,close:snap.equity.close,income:snap.equity.income},
     {label:'债券',open:snap.bond.open,close:snap.bond.close,income:snap.bond.income},
-    {label:'现金及货币',open:snap.cashCat.open,close:snap.cashCat.close,income:snap.cashCat.income}
+    {label:'现金及货币',open:snap.cashCat.open,close:snap.cashCat.close,income:snap.cashCat.income},
+    {label:'其他资产',open:snap.otherAssets.open,close:snap.otherAssets.close,income:snap.otherAssets.income}
   ];
   if(Math.abs(snap.other)>1000)detail.push({label:'其他及待核',open:0,close:0,income:snap.other});
   var allocView=stateV3.allocView||'look';
@@ -7674,8 +7693,8 @@ function renderAllocation(snap){
   ];
   if(toolOther)toolDetail.push({label:'其他及待核',open:0,close:0,income:toolOther});
   var invested=snap.equity.close+snap.bond.close;
-  var allocCard='<div class="v3-card"><h3>穿透后大类配置</h3><p class="sub">按基金一级分类估算底层资产，展示实际配置；基准待接入。</p>'+stackedBar(alloc)+allocRows(alloc,false)+allocNote(snap)+'<div class="v3-note">穿透口径：股票型基金按 100% 权益、债券型基金按 100% 债券估算；现金及货币含货币基金与未投资现金；基准配置待接入，当前不展示基准偏离。</div></div>';
-  var detailCard='<div class="v3-card"><div class="v3-card-head"><h3>配置明细</h3>'+allocTabs+'</div>'+(allocView==='tool'?'<div class="v3-detail-note"><b>持仓工具口径：</b>股票/债券为直接持仓；场内基金含 ETF/LOF（含债券 ETF）；场外基金不含货币基金；货币基金与未投资现金计入现金及货币。该口径不穿透基金底层。</div>':'<div class="v3-detail-note"><b>穿透口径：</b>股票型基金 → 权益，债券型基金 → 债券，货币市场型基金 → 现金及货币；收益贡献合计等于专户区间收益金额。</div>')+allocDetailTable(allocView==='tool'?toolDetail:detail,snap,allocView==='tool'?'类别':'大类')+'</div>';
+  var allocCard='<div class="v3-card"><h3>穿透后大类配置</h3><p class="sub">按基金一级分类估算底层资产，展示实际配置；基准待接入。</p>'+stackedBar(alloc)+allocRows(alloc,false)+'<div class="v3-note">穿透口径：股票型基金按 100% 权益、债券型基金按 100% 债券估算；现金及货币含货币基金与未投资现金；其余未归类基金及待核项计入其他资产；基准配置待接入，当前不展示基准偏离。</div></div>';
+  var detailCard='<div class="v3-card"><div class="v3-card-head"><h3>配置明细</h3>'+allocTabs+'</div>'+(allocView==='tool'?'<div class="v3-detail-note"><b>持仓工具口径：</b>股票/债券为直接持仓；场内基金含 ETF/LOF（含债券 ETF）；场外基金不含货币基金；货币基金与未投资现金计入现金及货币。该口径不穿透基金底层。</div>':'<div class="v3-detail-note"><b>穿透口径：</b>股票型基金 → 权益，债券型基金 → 债券，货币市场型基金 → 现金及货币，其余基金与待核项 → 其他资产；收益贡献合计等于专户区间收益金额。</div>')+allocDetailTable(allocView==='tool'?toolDetail:detail,snap,allocView==='tool'?'类别':'大类')+'</div>';
   var topCard='<div class="v3-card"><h3>跨资产前十大</h3><p class="sub">基金与股票合并排序，占比统一以专户净资产为分母。</p><div class="v3-table-wrap"><table class="v3-table left2 top10"><thead><tr><th>#</th><th>名称</th><th>类型</th><th>期末市值（元）</th><th>占净资产</th><th>区间收益（元）</th><th>收益率</th></tr></thead><tbody>'+
       top.map(function(x,i){
         return '<tr><td>'+(i+1)+'</td><td class="name" title="'+esc(x.name)+'">'+esc(x.name)+'</td><td>'+x.type+' · '+esc(x.sub)+'</td><td>'+num(x.close,2)+'</td><td>'+(snap.nav?x.close/snap.nav*100:0).toFixed(2)+'%</td><td class="'+cls(x.total)+'">'+num(x.total,2)+'</td><td class="'+(x.retPct==null?'':cls(x.retPct))+'">'+(x.retPct==null?'—':pct(x.retPct))+'</td></tr>';
