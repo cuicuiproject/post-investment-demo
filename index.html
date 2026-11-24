@@ -6934,6 +6934,7 @@ body.v3-on #spv-detail-context,body.v3-on #export,body.v3-on .workspace-tabs{dis
 #spv-detail-v3 .v3-att-item button{flex:none;border:1px solid #cfdfec;border-radius:5px;background:#fff;color:#24628c;font:11px 'Microsoft YaHei';padding:4px 8px;cursor:pointer}
 #spv-detail-v3 .v3-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 #spv-detail-v3 .v3-stats.five{grid-template-columns:repeat(5,minmax(0,1fr))}
+#spv-detail-v3 .v3-stats.three{grid-template-columns:repeat(3,minmax(0,1fr))}
 #spv-detail-v3 .v3-stat{padding:12px 14px;border:1px solid #d7e3ed;border-radius:8px;background:#fff}
 #spv-detail-v3 .v3-stat span{display:block;color:#74899b;font-size:11px}
 #spv-detail-v3 .v3-stat>span>.metric-info-wrap{display:inline-block;vertical-align:middle;margin-left:2px}
@@ -6987,7 +6988,7 @@ body.v3-on #spv-detail-context,body.v3-on #export,body.v3-on .workspace-tabs{dis
 @media(max-width:1180px){
   #spv-detail-v3 .v3-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
   #spv-detail-v3 .v3-grid-2,#spv-detail-v3 .v3-grid-2.even,#spv-detail-v3 .v3-grid-2.alloc-cats,#spv-detail-v3 .v3-grid-2.alloc-main{grid-template-columns:1fr}
-  #spv-detail-v3 .v3-stats,#spv-detail-v3 .v3-stats.five{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #spv-detail-v3 .v3-stats,#spv-detail-v3 .v3-stats.three,#spv-detail-v3 .v3-stats.five{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:820px){
   #spv-detail-v3 .v3-filter{grid-template-columns:1fr 1fr;padding:12px}
@@ -7680,12 +7681,11 @@ function renderAllocation(snap){
         return '<tr><td>'+(i+1)+'</td><td class="name" title="'+esc(x.name)+'">'+esc(x.name)+'</td><td>'+x.type+' · '+esc(x.sub)+'</td><td>'+num(x.close,2)+'</td><td>'+(snap.nav?x.close/snap.nav*100:0).toFixed(2)+'%</td><td class="'+cls(x.total)+'">'+num(x.total,2)+'</td><td class="'+(x.retPct==null?'':cls(x.retPct))+'">'+(x.retPct==null?'—':pct(x.retPct))+'</td></tr>';
       }).join('')+'</tbody></table></div></div>';
   var catCard='<div class="v3-card"><div class="v3-card-head"><h3>基金分类收益 <span class="v3-chip">收益视角</span></h3>'+fcatTabs+'</div><p class="sub">按 Wind '+(fcat==='l1'?'一级':'二级')+'分类汇总；占比为占基金组合，基金组合含货币基金。</p>'+fundCatTable(snap,fcats)+'<div class="v3-note">'+fcatNote+'</div></div>';
-  return '<h2 class="v3-h2">持仓结构</h2><p class="v3-sub">钱放在哪：先看穿透后大类配置与配置明细，再看前十大集中度，最后看分类收益。</p>'+
-    '<div class="v3-stats">'+
+  return '<h2 class="v3-h2">持仓结构</h2><p class="v3-sub">钱放在哪：先看穿透后大类配置与配置明细，再看跨资产前十大，最后看分类收益。</p>'+
+    '<div class="v3-stats three">'+
       '<div class="v3-stat"><span>专户净资产</span><strong>'+moneyShort(snap.nav)+'</strong></div>'+
       '<div class="v3-stat"><span>投资资产市值（不含货币/现金）</span><strong>'+moneyShort(invested)+'</strong></div>'+
       '<div class="v3-stat"><span>投资资产占比</span><strong>'+(snap.nav?invested/snap.nav*100:0).toFixed(1)+'%</strong></div>'+
-      '<div class="v3-stat"><span>前十大集中度（净资产）</span><strong>'+snap.top10Rate.toFixed(1)+'%</strong></div>'+
     '</div>'+
     '<div class="v3-grid-2 alloc-main">'+allocCard+detailCard+'</div>'+
     topCard+catCard;
