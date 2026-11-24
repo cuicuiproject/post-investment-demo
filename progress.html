@@ -80,6 +80,8 @@ ul.tight li{margin:1px 0}
 table.dep th,table.dep td{font-size:12px}
 table.dep td:first-child{color:var(--deep);font-weight:600}
 .impact{color:var(--doing);font-weight:700;white-space:nowrap}
+tr.dep-alert td{background:#fff8ea}
+tr.dep-alert td:first-child{color:#96600f;font-weight:700;border-left:3px solid #e2b45c}
 
 /* ---------- 页脚 ---------- */
 footer{margin-top:14px;color:#7b8d9e;font-size:11px;line-height:1.7}
@@ -246,7 +248,7 @@ footer .legend span{display:inline-flex;align-items:center;gap:5px}
       <tbody>
         <tr><td>各专户估值表模板样本（按持仓结构区分：仅基金、含股票、含债券等）</td><td>解析适配；模板不统一，接入速度取决于样本到位时间</td><td class="impact">11/30</td></tr>
         <tr><td>专户清单（代码、名称、历史别名）</td><td>文件归属识别、缺失估值日检查</td><td class="impact">11/30</td></tr>
-        <tr><td>交易流水提供确认（是否可提供逐笔流水）</td><td>还原买入卖出时点、成交价与费用；若仅提供估值表，买卖价差只能按估值日收盘价近似推算，区间内实际成交价无法还原，交易收益会有偏差</td><td class="impact">11/30 · 12/31</td></tr>
+        <tr class="dep-alert"><td>交易流水提供确认（是否可提供逐笔流水）</td><td>还原买入卖出时点、成交价与费用；若仅提供估值表，买卖价差只能按估值日收盘价近似推算，区间内实际成交价无法还原，交易收益会有偏差</td><td class="impact">11/30 · 12/31</td></tr>
         <tr><td>产品要素（投资策略、业绩基准、成立日期）</td><td>策略维度分析、基准对比</td><td class="impact">12/31</td></tr>
         <tr><td>业绩基准库与口径</td><td>超额收益、跑赢基准占比</td><td class="impact">12/31</td></tr>
         <tr><td>本地部署环境与 IT 对接</td><td>系统上线与数据入库</td><td class="impact">随项目</td></tr>
