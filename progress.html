@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>渤银理财投后分析系统 · 一期建设进度</title>
+<style>
+:root{--ink:#16324a;--sub:#5d7285;--line:#dfe7ef;--blue:#1268bb;--deep:#12395c;--bg:#eef3f8;
+      --done:#0f8a5f;--doing:#b8791a;--todo:#64748b;--next:#8a97a6}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+     font:13px/1.6 "Microsoft YaHei","PingFang SC",system-ui,sans-serif;
+     -webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:26px 24px 44px}
+
+/* ---------- 头部 ---------- */
+.hero{background:#fff;border-radius:12px;padding:22px 26px 20px;box-shadow:0 6px 22px #1d3a5714;
+      border-top:3px solid var(--blue)}
+.hero-top{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.kicker{display:inline-block;padding:2px 9px;border-radius:20px;background:#e8f1fa;color:var(--blue);
+        font-size:11px;font-weight:700;letter-spacing:.04em}
+.asof{color:var(--sub);font-size:12px}
+.hero h1{margin:12px 0 6px;font-size:23px;line-height:1.35;color:var(--deep);letter-spacing:.01em}
+.hero .sub{margin:0;color:var(--sub);font-size:12.5px}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
+.stat{padding:11px 14px;border:1px solid var(--line);border-radius:9px;background:#fbfdff;position:relative}
+.stat b{display:block;font:700 24px/1.1 Arial,"Microsoft YaHei";letter-spacing:.02em}
+.stat span{display:block;margin-top:3px;font-size:11.5px;color:var(--sub)}
+.stat.done{border-left:3px solid var(--done)} .stat.done b{color:var(--done)}
+.stat.doing{border-left:3px solid var(--doing)} .stat.doing b{color:var(--doing)}
+.stat.todo{border-left:3px solid var(--todo)} .stat.todo b{color:var(--todo)}
+.stat.next{border-left:3px solid var(--next)} .stat.next b{color:var(--next)}
+
+/* ---------- 区块 ---------- */
+.block{margin-top:16px;background:#fff;border-radius:12px;padding:18px 22px 20px;
+       box-shadow:0 6px 22px #1d3a5710}
+.block h2{margin:0 0 4px;font-size:15px;color:var(--deep);letter-spacing:.02em}
+.block h2 .num{color:var(--blue);font-weight:700;margin-right:0}
+.block .hint{margin:0 0 12px;color:var(--sub);font-size:11.5px}
+
+/* ---------- 主表 ---------- */
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:9px}
+table{width:100%;border-collapse:collapse;font-size:12.5px;background:#fff}
+thead th{background:#f2f7fb;color:#2c4f6e;font-weight:700;text-align:left;padding:9px 11px;
+         font-size:11.5px;white-space:nowrap;border-bottom:1px solid var(--line)}
+tbody td{padding:10px 11px;border-bottom:1px solid #edf2f7;vertical-align:top;line-height:1.55}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#fafcfe}
+.c-no{width:46px;text-align:center;color:var(--sub)}
+.c-st{width:78px}
+.c-date{width:96px;white-space:nowrap;color:#31536d}
+.c-dep{width:198px}th.c-dep{color:#7d4e07;background:#fbeed2;border-left:2px solid #e2b45c}td.c-dep{color:#96600f;font-weight:700;font-size:12px;line-height:1.5;background:#fffaf0;border-left:2px solid #e8c47a}
+.title-cell b{display:block;color:var(--deep);font-size:12.5px}
+.title-cell small{display:block;margin-top:2px;color:var(--sub);font-size:11px}
+.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;
+      white-space:nowrap}
+.pill.done{background:#e8f6ef;color:var(--done)}
+.pill.doing{background:#fdf3e3;color:var(--doing)}
+.pill.todo{background:#eef1f5;color:var(--todo)}
+.pill.next{background:#f3f5f8;color:var(--next)}
+tr.second-phase td{background:#fbfcfd;color:#8b98a6}
+tr.second-phase .title-cell b{color:#93a0ad}
+ul.tight{margin:0;padding-left:15px}
+ul.tight li{margin:1px 0}
+
+/* ---------- 时间轴 ---------- */
+.timeline{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:6px}
+.tl{position:relative;padding:0 16px 4px 0}
+.tl:not(:last-child):after{content:"";position:absolute;right:0;top:13px;bottom:8px;width:1px;
+        background:linear-gradient(180deg,var(--line),#eef3f8)}
+.tl .dot{display:flex;align-items:center;gap:7px;font-weight:700;color:var(--deep);font-size:12.5px}
+.tl .dot i{width:9px;height:9px;border-radius:50%;background:var(--blue);display:inline-block}
+.tl.done .dot i{background:var(--done)}
+.tl.doing .dot i{background:var(--doing)}
+.tl p{margin:6px 0 0;color:var(--sub);font-size:11.5px;line-height:1.6}
+.tl ul{margin:6px 0 0;padding-left:15px;color:#41586c;font-size:11.5px}
+.tl ul li{margin:1px 0}
+
+/* ---------- 依赖表 ---------- */
+table.dep th,table.dep td{font-size:12px}
+table.dep td:first-child{color:var(--deep);font-weight:600}
+.impact{color:var(--doing);font-weight:700;white-space:nowrap}
+
+/* ---------- 页脚 ---------- */
+footer{margin-top:14px;color:#7b8d9e;font-size:11px;line-height:1.7}
+footer b{color:#4d6478}
+footer .legend{display:flex;flex-wrap:wrap;gap:14px;margin:6px 0 8px}
+footer .legend span{display:inline-flex;align-items:center;gap:5px}
+
+@media (max-width:900px){
+  .stat-row{grid-template-columns:repeat(2,1fr)}
+  .timeline{grid-template-columns:1fr}
+  .tl{padding:0 0 14px}
+  .tl:not(:last-child):after{display:none}
+}
+@media print{
+  @page{size:A4 landscape;margin:10mm}
+  body{background:#fff}
+  .wrap{max-width:none;padding:0}
+  .hero,.block{box-shadow:none;border:1px solid #cfdae5;break-inside:avoid}
+  .block{margin-top:8px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="hero-top">
+      <span class="kicker">项目进度说明</span>
+      <span class="asof">统计截至 2026-11-24</span>
+    </div>
+    <h1>渤银理财投后分析系统 · 一期建设进度</h1>
+    <p class="sub">范围：一期「专户投后分析」。二期「全量理财产品经营分析」不在本期范围。</p>
+  </header>
+
+  <section class="block">
+    <h2><span class="num">一、</span>建设内容与进度</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="c-no">序号</th>
+            <th>建设内容</th>
+            <th class="c-st">状态</th>
+            <th>已具备 / 在建内容</th>
+            <th class="c-date">计划完成</th>
+            <th class="c-dep">需贵方配合</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="c-no">1</td>
+            <td class="title-cell"><b>单个专户分析</b><small>净值、收益、指标、配置、持仓</small></td>
+            <td class="c-st"><span class="pill doing">开发中</span></td>
+            <td><ul class="tight">
+              <li>已具备：专户净值走势、区间收益、资产配置、持仓与交易明细</li>
+              <li>已具备：底层资产下钻（规模、成本、市值、浮动盈亏、收益贡献）</li>
+              <li>在建：风险收益指标（年化波动、夏普、最大回撤）与业绩基准对比</li>
+            </ul></td>
+            <td class="c-date">11/30 主体<br>12 月中旬 指标</td>
+            <td class="c-dep">产品要素（投资策略、业绩基准、成立日期）</td>
+          </tr>
+          <tr>
+            <td class="c-no">2</td>
+            <td class="title-cell"><b>委外专户汇总及策略分析</b><small>多专户对比与策略归集</small></td>
+            <td class="c-st"><span class="pill doing">开发中</span></td>
+            <td><ul class="tight">
+              <li>在建：全部专户规模的横向对比，账户维度看规模、收益、风险</li>
+              <li>在建：按投资策略归集规模与收益，并下钻至对应专户</li>
+              <li>在建：跨专户同一标的合并汇总，看真实敞口</li>
+            </ul></td>
+            <td class="c-date">12/31</td>
+            <td class="c-dep">专户清单（代码、名称、历史别名）、策略字段</td>
+          </tr>
+          <tr>
+            <td class="c-no">3</td>
+            <td class="title-cell"><b>收益分析（基金、股票、ETF）</b><small>基于估值表与交易流水</small></td>
+            <td class="c-st"><span class="pill doing">开发中</span></td>
+            <td><ul class="tight">
+              <li>基金 / ETF：净值涨跌、买卖价差、现金分红（已完成）</li>
+              <li>股票：价格涨跌、买卖价差、分红收益（12 月中旬上线）</li>
+              <li>跨专户汇总同一标的的持仓与收益贡献；结果可回溯估值表与流水</li>
+            </ul></td>
+            <td class="c-date">基金 / ETF 已完成<br>股票 12 月中旬</td>
+            <td class="c-dep">各专户估值表模板样本（按持仓结构区分：仅基金、含股票、含债券、含可转债等，每类一份）</td>
+          </tr>
+          <tr>
+            <td class="c-no">4</td>
+            <td class="title-cell"><b>债券盈亏分析</b><small>市价、价差、票息三项拆解</small></td>
+            <td class="c-st"><span class="pill todo">待启动</span></td>
+            <td><ul class="tight">
+              <li>待建（12 月中旬）：市价变动、买卖价差、票息收入三项拆解</li>
+              <li>待建（12 月底）：组合与单券的收益贡献，久期、评级</li>
+            </ul></td>
+            <td class="c-date">12 月中旬 拆解<br>12/31 贡献与久期</td>
+            <td class="c-dep">债券收益口径：票息计提方式、价差与市价变动切分、含权处理；久期数据来源确认</td>
+          </tr>
+          <tr>
+            <td class="c-no">5</td>
+            <td class="title-cell"><b>数据与配置</b><small>上传、校验、专户与基准</small></td>
+            <td class="c-st"><span class="pill done">已完成</span></td>
+            <td><ul class="tight">
+              <li>估值表与交易流水上传，支持文件 / 文件夹批量导入</li>
+              <li>文件识别与专户归属校验、缺失估值日检查与补传、重复上传覆盖</li>
+              <li>上传历史与失败原因、专户管理（代码 / 别名 / 估值日历）、业绩基准维护</li>
+            </ul></td>
+            <td class="c-date">已完成</td>
+            <td class="c-dep">专户清单</td>
+          </tr>
+          <tr class="second-phase">
+            <td class="c-no">二期</td>
+            <td class="title-cell"><b>全量理财产品经营分析</b><small>不在本期范围</small></td>
+            <td class="c-st"><span class="pill next">未启动</span></td>
+            <td>方案已成型：2,500 亿口径下按产品、管理方式、投资策略、大类资产、管理主体五个视角分析</td>
+            <td class="c-date">一期落地后启动</td>
+            <td class="c-dep">全量产品数据、基准口径</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">二、</span>三个交付节点</h2>
+    <p class="hint">以下日期指可以投产、渤银老师可以使用的时间。</p>
+    <div class="timeline">
+      <div class="tl done">
+        <div class="dot"><i></i>11 月 30 日前</div>
+        <p>全部专户的估值表都能导入出数</p>
+        <ul>
+          <li>全量专户接入</li>
+          <li>估值表模板适配完成</li>
+          <li>基金 / ETF 收益当天可查</li>
+        </ul>
+      </div>
+      <div class="tl doing">
+        <div class="dot"><i></i>12 月中旬（第二周）</div>
+        <p>单个专户分析补齐：指标、股票与债券</p>
+        <ul>
+          <li>风险收益指标（波动、夏普、最大回撤）</li>
+          <li>资产配置与持仓明细完善</li>
+          <li>股票收益计算上线（价格涨跌、价差、分红）</li>
+          <li>债券盈亏拆解上线（市价变动、价差、票息）</li>
+        </ul>
+      </div>
+      <div class="tl">
+        <div class="dot"><i></i>12 月 31 日前</div>
+        <p>一期功能全量交付</p>
+        <ul>
+          <li>多专户汇总与策略对比</li>
+          <li>债券收益贡献与久期、评级</li>
+          <li>业绩基准与超额</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">三、</span>需要贵方配合的事项</h2>
+    <p class="hint">系统进度与数据提供是两条线：数据到一批，系统跑一批，互不阻塞。</p>
+    <table class="dep">
+      <thead>
+        <tr><th>事项</th><th>用途</th><th>影响节点</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>各专户估值表模板样本（按持仓结构区分：仅基金、含股票、含债券等）</td><td>解析适配；模板不统一，接入速度取决于样本到位时间</td><td class="impact">11/30</td></tr>
+        <tr><td>专户清单（代码、名称、历史别名）</td><td>文件归属识别、缺失估值日检查</td><td class="impact">11/30</td></tr>
+        <tr><td>产品要素（投资策略、业绩基准、成立日期）</td><td>策略维度分析、基准对比</td><td class="impact">12/31</td></tr>
+        <tr><td>业绩基准库与口径</td><td>超额收益、跑赢基准占比</td><td class="impact">12/31</td></tr>
+        <tr><td>本地部署环境与 IT 对接</td><td>系统上线与数据入库</td><td class="impact">随项目</td></tr>
+        <tr><td>外部数据源（分红、债券久期等）</td><td>当前接入我方财汇数据；本地部署后是沿用财汇、还是开放贵方自有数据源，需确认授权范围、更新频率与对接方式</td><td class="impact">11/30 · 12 月中旬</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>
+    <div class="legend">
+      <span><span class="pill done">已完成</span>功能可演示、可验收，已具备真实数据出数能力</span>
+      <span><span class="pill doing">开发中</span>界面与主流程已成型，处于联调与补功能阶段</span>
+      <span><span class="pill todo">待启动</span>已纳入排期，尚未进入开发</span>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
