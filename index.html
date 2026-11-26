@@ -8020,11 +8020,11 @@ function filterFunds(snap,forcedType){
 
 function fundRowsHtml(pageRows,allRows,snap){
   var body=pageRows.map(function(x){
-    return '<tr data-fund-row="'+esc(x.code)+'"><td>'+esc(x.code)+'</td><td class="name" title="'+esc(x.name)+'">'+esc(x.name)+'</td><td>'+(x.type==='off'?'场外基金':'场内ETF/LOF')+'</td><td>'+esc(x.l2n)+'</td><td>'+num(x.close,2)+'</td><td>'+(snap.fundClose?x.close/snap.fundClose*100:0).toFixed(2)+'%</td>'+fundBasisCells(x)+'<td class="'+cls(x.total)+'">'+num(x.total,2)+'</td><td class="'+(x.retPct==null?'':cls(x.retPct))+'">'+(x.retPct==null?'—':pct(x.retPct))+'</td><td class="'+cls(x.contrib)+'">'+(+x.contrib||0).toFixed(2)+'</td></tr>';
+    return '<tr data-fund-row="'+esc(x.code)+'"><td>'+esc(x.code)+'</td><td class="name" title="'+esc(x.name)+'">'+esc(x.name)+'</td><td>'+(x.type==='off'?'场外基金':'场内ETF/LOF')+'</td><td>'+esc(x.l2n)+'</td><td>'+num(x.close,2)+'</td><td>'+(snap.fundClose?x.close/snap.fundClose*100:0).toFixed(2)+'%</td>'+fundBasisCells(x)+'<td class="'+cls(x.total)+'">'+num(x.total,2)+'</td><td class="'+(x.retPct==null?'':cls(x.retPct))+'">'+(x.retPct==null?'—':pct(x.retPct))+'</td><td class="'+cls(x.contrib)+'">'+(+x.contrib||0).toFixed(2)+'%</td></tr>';
   }).join('');
   var close=sum(allRows,function(x){return x.close}),income=sum(allRows,function(x){return x.total}),open=sum(allRows,function(x){return x.open});
   var totalLabel=allRows.length>pageRows.length?'合计 '+allRows.length+' 只（全部）':'合计 '+allRows.length+' 只';
-  var total='<tr class="v3-total"><td colspan="4">'+totalLabel+'</td><td>'+num(close,2)+'</td><td>'+(snap.fundClose?close/snap.fundClose*100:0).toFixed(2)+'%</td>'+fundBasisTotalCells(allRows)+'<td class="'+cls(income)+'">'+num(income,2)+'</td><td class="'+(open?cls(income/open*100):'')+'">'+(open?pct(income/open*100):'—')+'</td><td class="'+cls(snap.nav?income/snap.nav*100:0)+'">'+(snap.nav?(income/snap.nav*100).toFixed(2):'—')+'</td></tr>';
+  var total='<tr class="v3-total"><td colspan="4">'+totalLabel+'</td><td>'+num(close,2)+'</td><td>'+(snap.fundClose?close/snap.fundClose*100:0).toFixed(2)+'%</td>'+fundBasisTotalCells(allRows)+'<td class="'+cls(income)+'">'+num(income,2)+'</td><td class="'+(open?cls(income/open*100):'')+'">'+(open?pct(income/open*100):'—')+'</td><td class="'+cls(snap.nav?income/snap.nav*100:0)+'">'+(snap.nav?(income/snap.nav*100).toFixed(2)+'%':'—')+'</td></tr>';
   return body+total;
 }
 
@@ -8142,7 +8142,7 @@ function renderFundAsset(snap,mode,label){
       '<label>搜索<input id="v3-fund-q" placeholder="基金代码或名称" value="'+esc(stateV3.q)+'"></label>'+
       '<div class="v3-basis-switch"><span>收益口径</span>'+fundBasisSwitch()+'</div>'+
       '<span class="v3-count" id="v3-fund-count">'+assetCountText(allRows)+'</span>'+
-    '</div><div class="v3-table-wrap"><table class="v3-table left2 fundtable"><thead><tr>'+sortTh('funds','code','基金代码')+sortTh('funds','name','基金名称')+sortTh('funds','type','工具类型')+sortTh('funds','l2','Wind 二级')+sortTh('funds','close','期末市值（元）')+sortTh('funds','weight','占'+label+'组合')+fundBasisThs()+sortTh('funds','income','区间总收益（元）')+sortTh('funds','ret','区间收益率')+sortTh('funds','contrib','收益贡献（pct）')+'</tr></thead><tbody id="v3-fund-rows">'+fundRowsHtml(ps.rows,allRows,sub)+'</tbody></table></div>'+
+    '</div><div class="v3-table-wrap"><table class="v3-table left2 fundtable"><thead><tr>'+sortTh('funds','code','基金代码')+sortTh('funds','name','基金名称')+sortTh('funds','type','工具类型')+sortTh('funds','l2','Wind 二级')+sortTh('funds','close','期末市值（元）')+sortTh('funds','weight','占'+label+'组合')+fundBasisThs()+sortTh('funds','income','区间总收益（元）')+sortTh('funds','ret','区间收益率')+sortTh('funds','contrib','收益贡献（%）')+'</tr></thead><tbody id="v3-fund-rows">'+fundRowsHtml(ps.rows,allRows,sub)+'</tbody></table></div>'+
     '<div class="v3-pager" id="v3-fund-pager">'+pagerHtml('funds',ps.page,ps.pages,allRows.length)+'</div><div class="v3-note">收益率＝区间总收益 ÷ 期初市值；期初为 0 的新建仓'+label+'显示「—」；期末市值取最新持仓快照，收益按所选区间折算。</div></div>';
   return head+(subNote?'<p class="v3-sub">'+subNote+'</p>':'')+stats+(view==='chart'?fundChartView(sub,label):list);
 }
@@ -8171,8 +8171,8 @@ function bondTableRows(rows){
   var open=sum(rows,function(x){return x.open}),close=sum(rows,function(x){return x.close});
   var hold=sum(rows,function(x){return x.hold}),buy=sum(rows,function(x){return x.buy}),sell=sum(rows,function(x){return x.sell}),div=sum(rows,function(x){return x.div});
   var totalIncome=sum(rows,function(x){return x.total}),retPct=open?totalIncome/open*100:0;
-  var body=rows.map(function(x){return '<tr><td>'+esc(x.code)+'</td><td class="name" title="'+esc(x.name)+'">'+esc(x.name)+'</td><td>'+esc(x.type)+'</td><td>'+esc(x.rating)+'</td><td>'+esc(x.term)+'</td><td>'+num(x.open,2)+'</td><td>'+num(x.close,2)+'</td><td class="'+cls(x.hold)+'">'+num(x.hold,2)+'</td><td class="'+cls(x.buy+x.sell)+'">'+num(x.buy+x.sell,2)+'</td><td class="'+cls(x.div)+'">'+num(x.div,2)+'</td><td class="'+cls(x.total)+'">'+num(x.total,2)+'</td><td class="'+(x.retPct==null?'':cls(x.retPct))+'">'+(x.retPct==null?'—':pct(x.retPct))+'</td><td class="'+cls(x.contrib)+'">'+(+x.contrib||0).toFixed(2)+'</td></tr>'}).join('');
-  var total='<tr class="v3-total"><td colspan="5">合计 '+rows.length+' 只</td><td>'+num(open,2)+'</td><td>'+num(close,2)+'</td><td class="'+cls(hold)+'">'+num(hold,2)+'</td><td class="'+cls(buy+sell)+'">'+num(buy+sell,2)+'</td><td class="'+cls(div)+'">'+num(div,2)+'</td><td class="'+cls(totalIncome)+'">'+num(totalIncome,2)+'</td><td class="'+(open?cls(retPct):'')+'">'+(open?pct(retPct):'—')+'</td><td class="'+cls(sum(rows,function(x){return +x.contrib||0}))+'">'+(sum(rows,function(x){return +x.contrib||0})).toFixed(2)+'</td></tr>';
+  var body=rows.map(function(x){return '<tr><td>'+esc(x.code)+'</td><td class="name" title="'+esc(x.name)+'">'+esc(x.name)+'</td><td>'+esc(x.type)+'</td><td>'+esc(x.rating)+'</td><td>'+esc(x.term)+'</td><td>'+num(x.open,2)+'</td><td>'+num(x.close,2)+'</td><td class="'+cls(x.hold)+'">'+num(x.hold,2)+'</td><td class="'+cls(x.buy+x.sell)+'">'+num(x.buy+x.sell,2)+'</td><td class="'+cls(x.div)+'">'+num(x.div,2)+'</td><td class="'+cls(x.total)+'">'+num(x.total,2)+'</td><td class="'+(x.retPct==null?'':cls(x.retPct))+'">'+(x.retPct==null?'—':pct(x.retPct))+'</td><td class="'+cls(x.contrib)+'">'+(+x.contrib||0).toFixed(2)+'%</td></tr>'}).join('');
+  var total='<tr class="v3-total"><td colspan="5">合计 '+rows.length+' 只</td><td>'+num(open,2)+'</td><td>'+num(close,2)+'</td><td class="'+cls(hold)+'">'+num(hold,2)+'</td><td class="'+cls(buy+sell)+'">'+num(buy+sell,2)+'</td><td class="'+cls(div)+'">'+num(div,2)+'</td><td class="'+cls(totalIncome)+'">'+num(totalIncome,2)+'</td><td class="'+(open?cls(retPct):'')+'">'+(open?pct(retPct):'—')+'</td><td class="'+cls(sum(rows,function(x){return +x.contrib||0}))+'">'+(sum(rows,function(x){return +x.contrib||0})).toFixed(2)+'%</td></tr>';
   return body+total;
 }
 function renderBonds(snap){
@@ -8203,7 +8203,7 @@ function renderBonds(snap){
   var table='<div class="v3-card"><div class="v3-toolbar">'+typeSel+
       '<label>搜索<input id="v3-bond-q" placeholder="债券代码或名称" value="'+esc(stateV3.bondQ||'')+'"></label>'+
       '<span class="v3-count" id="v3-bond-count">'+(q?'筛选后 ':'共 ')+rows.length+' 只</span>'+
-    '</div><div class="v3-table-wrap"><table class="v3-table left2"><thead><tr><th>代码</th><th>名称</th><th>券种</th><th>评级</th><th>剩余期限</th><th>期初市值（元）</th><th>期末市值（元）</th><th>持有涨跌（元）</th><th>买卖交易（元）</th><th>利息收入（元）</th><th>区间总收益（元）</th><th>区间收益率</th><th>收益贡献（pct）</th></tr></thead><tbody id="v3-bond-rows">'+bondTableRows(rows)+'</tbody></table></div></div>';
+    '</div><div class="v3-table-wrap"><table class="v3-table left2"><thead><tr><th>代码</th><th>名称</th><th>券种</th><th>评级</th><th>剩余期限</th><th>期初市值（元）</th><th>期末市值（元）</th><th>持有涨跌（元）</th><th>买卖交易（元）</th><th>利息收入（元）</th><th>区间总收益（元）</th><th>区间收益率</th><th>收益贡献（%）</th></tr></thead><tbody id="v3-bond-rows">'+bondTableRows(rows)+'</tbody></table></div></div>';
   var list=table,charts='<div class="v3-grid-2 even">'+profit+bondStructureCard('券种分布',bondStructure(allRows,'type'),'按期末市值统计直投债券的券种占比。')+'</div>'+'<div class="v3-grid-2 even">'+bondStructureCard('外部评级',bondStructure(allRows,'rating'),'按期末市值统计直投债券的评级占比。')+concentration+'</div>';
   var head='';
   var sub='';
@@ -8230,11 +8230,11 @@ function filterStocks(snap){
 
 function stockRowsHtml(pageRows,allRows,snap){
   var body=pageRows.map(function(x){
-    return '<tr data-stock-row="'+esc(x.code)+'"><td>'+esc(x.code)+'</td><td class="name" title="'+esc(x.name)+'">'+esc(x.name)+'</td><td>'+esc(x.industry)+'</td><td>'+num(x.close,2)+'</td><td>'+(snap.stockClose?x.close/snap.stockClose*100:0).toFixed(2)+'%</td>'+stockBasisCells(x)+'<td class="'+cls(x.total)+'">'+num(x.total,2)+'</td><td class="'+(x.retPct==null?'':cls(x.retPct))+'">'+(x.retPct==null?'—':pct(x.retPct))+'</td><td class="'+cls(x.contrib)+'">'+x.contrib.toFixed(2)+'</td></tr>';
+    return '<tr data-stock-row="'+esc(x.code)+'"><td>'+esc(x.code)+'</td><td class="name" title="'+esc(x.name)+'">'+esc(x.name)+'</td><td>'+esc(x.industry)+'</td><td>'+num(x.close,2)+'</td><td>'+(snap.stockClose?x.close/snap.stockClose*100:0).toFixed(2)+'%</td>'+stockBasisCells(x)+'<td class="'+cls(x.total)+'">'+num(x.total,2)+'</td><td class="'+(x.retPct==null?'':cls(x.retPct))+'">'+(x.retPct==null?'—':pct(x.retPct))+'</td><td class="'+cls(x.contrib)+'">'+x.contrib.toFixed(2)+'%</td></tr>';
   }).join('');
   var close=sum(allRows,function(x){return x.close}),income=sum(allRows,function(x){return x.total}),open=sum(allRows,function(x){return x.open});
   var totalLabel=allRows.length>pageRows.length?'合计 '+allRows.length+' 只（全部）':'合计 '+allRows.length+' 只';
-  var total='<tr class="v3-total"><td colspan="3">'+totalLabel+'</td><td>'+num(close,2)+'</td><td>'+(snap.stockClose?close/snap.stockClose*100:0).toFixed(2)+'%</td>'+stockBasisTotalCells(allRows)+'<td class="'+cls(income)+'">'+num(income,2)+'</td><td class="'+(open?cls(income/open*100):'')+'">'+(open?pct(income/open*100):'—')+'</td><td class="'+cls(snap.nav?income/snap.nav*100:0)+'">'+(snap.nav?income/snap.nav*100:0).toFixed(2)+'</td></tr>';
+  var total='<tr class="v3-total"><td colspan="3">'+totalLabel+'</td><td>'+num(close,2)+'</td><td>'+(snap.stockClose?close/snap.stockClose*100:0).toFixed(2)+'%</td>'+stockBasisTotalCells(allRows)+'<td class="'+cls(income)+'">'+num(income,2)+'</td><td class="'+(open?cls(income/open*100):'')+'">'+(open?pct(income/open*100):'—')+'</td><td class="'+cls(snap.nav?income/snap.nav*100:0)+'">'+(snap.nav?income/snap.nav*100:0).toFixed(2)+'%</td></tr>';
   return body+total;
 }
 
@@ -8261,7 +8261,7 @@ function renderStocks(snap){
       '<label>搜索<input id="v3-stock-q" placeholder="股票代码或名称" value="'+esc(stateV3.q)+'"></label>'+
       '<div class="v3-basis-switch"><span>收益口径</span>'+stockBasisSwitch()+'</div>'+
       '<span class="v3-count" id="v3-stock-count">'+assetCountText(allRows)+'</span>'+
-    '</div><div class="v3-table-wrap"><table class="v3-table left2 stocktable"><thead><tr>'+sortTh('stocks','code','股票代码')+sortTh('stocks','name','股票名称')+sortTh('stocks','industry','申万一级行业')+sortTh('stocks','close','期末市值（元）')+sortTh('stocks','weight','占股票组合')+stockBasisThs()+sortTh('stocks','income','区间总收益（元）')+sortTh('stocks','ret','区间收益率')+sortTh('stocks','contrib','收益贡献（pct）')+'</tr></thead><tbody id="v3-stock-rows">'+stockRowsHtml(ps.rows,allRows,snap)+'</tbody></table></div>'+
+    '</div><div class="v3-table-wrap"><table class="v3-table left2 stocktable"><thead><tr>'+sortTh('stocks','code','股票代码')+sortTh('stocks','name','股票名称')+sortTh('stocks','industry','申万一级行业')+sortTh('stocks','close','期末市值（元）')+sortTh('stocks','weight','占股票组合')+stockBasisThs()+sortTh('stocks','income','区间总收益（元）')+sortTh('stocks','ret','区间收益率')+sortTh('stocks','contrib','收益贡献（%）')+'</tr></thead><tbody id="v3-stock-rows">'+stockRowsHtml(ps.rows,allRows,snap)+'</tbody></table></div>'+
     '<div class="v3-pager" id="v3-stock-pager">'+pagerHtml('stocks',ps.page,ps.pages,allRows.length)+'</div><div class="v3-note">权重＝个股市值 ÷ 股票组合市值；收益贡献＝个股收益 ÷专户净资产。点击行查看持有/交易拆分；市值取最新快照，收益按所选区间折算。</div></div>';
   var charts='<div class="v3-grid-2 even">'+
       '<div class="v3-card"><div class="v3-card-head"><h3>行业暴露</h3><span class="v3-chip">申万一级行业</span></div><p class="sub">按申万一级行业汇总，占股票组合市值比例；行业基准待接入。</p>'+snap.industry.map(function(x){
