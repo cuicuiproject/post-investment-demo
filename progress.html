@@ -102,10 +102,60 @@ footer .legend span{display:inline-flex;align-items:center;gap:5px}
   .hero,.block{box-shadow:none;border:1px solid #cfdae5;break-inside:avoid}
   .block{margin-top:8px}
 }
+
+/* ---------- 顶部页签 ---------- */
+.tabs{display:inline-flex;gap:4px;margin-top:16px;padding:4px;background:#fff;border:1px solid var(--line);
+      border-radius:10px;box-shadow:0 4px 14px #1d3a570d}
+.tabs button{appearance:none;border:0;background:transparent;color:#4a6478;cursor:pointer;
+      font:700 12.5px/1 "Microsoft YaHei","PingFang SC",sans-serif;padding:9px 18px;border-radius:7px;
+      transition:background .15s,color .15s}
+.tabs button:hover{background:#eef4fa;color:var(--blue)}
+.tabs button.active{background:var(--blue);color:#fff;box-shadow:0 3px 9px #1268bb33}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* ---------- 指标说明 ---------- */
+.tab-panel#tab-metrics .hero{margin-top:0}
+.fx{font-family:"Cambria Math",Georgia,"Times New Roman","Microsoft YaHei",serif;
+    background:#f6f9fc;border-left:3px solid #b9d3ea;border-radius:0 6px 6px 0;
+    padding:9px 12px;margin:7px 0;color:#10304d;font-size:13px;line-height:1.9;overflow-x:auto}
+.fx sub,.fx sup{font-size:.72em}
+.fx.fx-main{background:#eef6fd;border-left-color:var(--blue);color:#0d2f4d;font-weight:700;font-size:13.5px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.m-card{border:1px solid var(--line);border-radius:9px;padding:12px 14px 10px;background:#fbfdff}
+.m-card h3{margin:0;font-size:12.5px;color:var(--deep);letter-spacing:.02em}
+.m-card p{margin:6px 0 0;color:var(--sub);font-size:11.5px;line-height:1.72}
+.m-card p b{color:#2c4f6e}
+.m-card.accent{background:#f7fbff;border-color:#cfe2f2}
+.m-h3{margin:16px 0 2px;font-size:12.5px;color:var(--deep)}
+.note-line{margin:8px 0 0;color:var(--sub);font-size:11.5px;line-height:1.75}
+.note-line b{color:#2c4f6e}
+table.sym td:first-child{width:190px;color:var(--deep);font-weight:600;white-space:nowrap}
+table.sym td{font-size:12px}
+@media (max-width:900px){
+  .grid2,.grid3{grid-template-columns:1fr}
+  .tabs{display:flex}
+  .tabs button{flex:1;padding:9px 10px}
+}
+@media print{
+  .tabs{display:none}
+  .tab-panel{display:none!important}
+  .tab-panel.active{display:block!important}
+  .grid2,.grid3{grid-template-columns:1fr 1fr}
+  .m-card{break-inside:avoid}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
+
+  <nav class="tabs" role="tablist" aria-label="页面切换">
+    <button type="button" class="active" data-tab="progress" role="tab" aria-selected="true">建设进度</button>
+    <button type="button" data-tab="metrics" role="tab" aria-selected="false">指标与算法说明</button>
+  </nav>
+
+  <div class="tab-panel active" id="tab-progress">
 
   <header class="hero">
     <div class="hero-top">
@@ -265,6 +315,241 @@ footer .legend span{display:inline-flex;align-items:center;gap:5px}
     </div>
   </footer>
 
+  </div><!-- /tab-progress -->
+
+  <div class="tab-panel" id="tab-metrics">
+
+  <header class="hero" style="border-top-color:#0f8a5f">
+    <div class="hero-top">
+      <span class="kicker" style="background:#e8f6ef;color:#0f8a5f">口径说明</span>
+      <span class="asof">修订日期 2026-11-26</span>
+    </div>
+    <h1>渤银理财投后分析系统 · 计算指标及核心逻辑</h1>
+    <p class="sub">本页说明系统内各项收益、收益率与风险指标的计算口径，用于结果核对与验收；公式中的费用项当前数据源均为 0 或 NA，暂按 0 计算。</p>
+  </header>
+
+  <section class="block">
+    <h2><span class="num">一、</span>收益拆分逻辑（按收益来源）</h2>
+    <p class="hint">日收益按「持有 / 卖出交易 / 买入交易 / 再投交易 / 分红」五项拆解，逐日汇总得到区间绝对收益金额。</p>
+
+    <div class="fx fx-main">日收益<sub>t</sub> ＝ 持有收益<sub>t</sub> ＋ 卖出交易收益<sub>t</sub> ＋ 买入交易收益<sub>t</sub> ＋ 再投交易收益<sub>t</sub> ＋ 分红收益<sub>t</sub></div>
+
+    <div class="grid2">
+      <div class="m-card">
+        <h3>持有收益</h3>
+        <div class="fx">持有收益<sub>t</sub> ＝ (P<sub>t</sub> − P<sub>t−1</sub>) × (Q<sub>t−1</sub> − N<sub>sell,t</sub>)</div>
+        <p><b>Q<sub>t−1</sub> − N<sub>sell,t</sub></b> 是昨日持仓中今日未卖出的部分，按原始行情价计算。<br>
+        当日卖出部分只享有「昨收 → 成交价」的波动（已计入卖出交易收益），不再享有「成交价 → 当日收盘」的波动；当日买入与再投份额从下一日起才纳入持有收益。首个计算日无前一估值日，持有收益为 0。</p>
+      </div>
+      <div class="m-card">
+        <h3>卖出交易收益</h3>
+        <div class="fx">卖出交易收益<sub>t</sub> ＝ (V<sub>sell,t</sub> − P<sub>t−1</sub> − f<sub>sell,t</sub>) × N<sub>sell,t</sub></div>
+        <p>当日卖出部分从昨收行情到成交价之间的已实现收益，已扣除单位卖出费用。V<sub>sell,t</sub> 为当日卖出加权成交均价；若按逐笔计算，则不取均价、逐笔对应。</p>
+      </div>
+      <div class="m-card">
+        <h3>买入交易收益</h3>
+        <div class="fx">买入交易收益<sub>t</sub> ＝ (P<sub>t</sub> − V<sub>buy,t</sub> − f<sub>buy,t</sub>) × N<sub>buy,t</sub></div>
+        <p>当日买入部分从成交价到当日收盘行情之间的浮盈或浮亏。</p>
+      </div>
+      <div class="m-card">
+        <h3>分红收益</h3>
+        <div class="fx">分红收益<sub>t</sub> ＝ D<sub>t</sub> × Q<sub>t−1</sub></div>
+        <p>t 取除息日，Q<sub>t−1</sub> 即权益登记日持仓数量；每股分红金额来自公告或估值表，税前税后按实际使用口径。</p>
+      </div>
+      <div class="m-card">
+        <h3>再投交易收益</h3>
+        <div class="fx">N<sub>reinvest,t</sub> ＝ (D<sub>t</sub> × Q<sub>t−1</sub>) ÷ V<sub>reinvest,t</sub><br>再投交易收益<sub>t</sub> ＝ (P<sub>t</sub> − V<sub>reinvest,t</sub> − f<sub>reinvest,t</sub>) × N<sub>reinvest,t</sub></div>
+        <p>分红再投相当于用分红现金买入份额。再投价默认为当日收盘价（V<sub>reinvest,t</sub> ＝ P<sub>t</sub>），此时再投数量 ＝ 分红金额 ÷ 收盘价，再投交易收益为 0。</p>
+      </div>
+      <div class="m-card">
+        <h3>区间绝对收益金额</h3>
+        <div class="fx">区间绝对收益金额 ＝ Σ<sub>t</sub> 日度合并收益<sub>t</sub></div>
+        <p>日度合并收益为当日各持仓资产日收益之和，区间金额为逐日累加结果。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">二、</span>收益校验与分红再投对账</h2>
+    <p class="hint">用现金流法独立算一遍区间收益，与逐日拆分结果比对，用于发现漏记、重复计息等问题。</p>
+
+    <div class="fx">现金流法收益 ＝ 期末市值 − 期初市值 ＋ 卖出成交金额 − 买入成交金额 ＋ 现金分红总额 − 再投支出</div>
+    <p class="note-line">其中：现金分红总额 ＝ Σ<sub>t</sub> D<sub>t</sub> × Q<sub>t−1</sub>；再投支出 ＝ Σ<sub>t</sub> V<sub>reinvest,t</sub> × N<sub>reinvest,t</sub>。理论上 <b>区间绝对收益金额 ＝ 现金流法收益</b>，对不平即需排查数据。</p>
+
+    <h3 class="m-h3">分红再投的份额对账</h3>
+    <div class="fx">Q<sub>t</sub> ＝ Q<sub>t−1</sub> − N<sub>sell,t</sub> ＋ N<sub>buy,t</sub> ＋ N<sub>reinvest,t</sub></div>
+    <p class="note-line">若估值表中的实际数量与该式不一致，说明存在数据异常、份额调整或其他未识别因素，需单独排查。现金分红不再投时 N<sub>reinvest,t</sub> ＝ 0，基金拿到现金分红但份额不变，估值表市值下降仅反映除息，由分红收益科目补偿。</p>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">三、</span>债券收益分析</h2>
+    <p class="hint">总体拆分逻辑与股票 / 基金一致，指标口径替换为票息、价差与市价变动三项。</p>
+    <div class="grid2">
+      <div class="m-card">
+        <h3>票息收入</h3>
+        <div class="fx">票息收入 ＝（期末应计利息 − 期初应计利息）＋ 期间实际收到的票息<br>应计利息 ＝ 面值 × 票面利率 × 计息天数 ÷ 全年天数</div>
+        <p>按权责发生制计提，另加期间实际到账票息，避免跨期错配。</p>
+      </div>
+      <div class="m-card">
+        <h3>买卖价差收益</h3>
+        <div class="fx">买入：面值/100 ×（成交日估值净价 − 实际成交净价）<br>卖出：面值/100 ×（实际成交净价 − 成交日估值净价）</div>
+        <p>合计 ＝ Σ（实际成交净价 − 当日估值净价）× 面值/100 × 买卖方向。</p>
+      </div>
+      <div class="m-card">
+        <h3>市价变动收益</h3>
+        <div class="fx">市价变动收益 ＝ 当日持仓面值/100 ×（当日估值净价 − 前日估值净价）</div>
+        <p>可结合估值表验证：市值 ＝ 数量 × 净价/100 为净价市值；全价 ＝ 净价 ＋ 应计利息。</p>
+      </div>
+      <div class="m-card">
+        <h3>三项关系</h3>
+        <div class="fx">债券区间收益 ＝ 票息收入 ＋ 买卖价差收益 ＋ 市价变动收益</div>
+        <p>债券与股票 / 基金的差别在于：收益按净价变动与应计利息分列，不把票息混入价格波动。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">四、</span>按收益状态拆分</h2>
+    <p class="hint">系统「按收益状态」视图使用的两个口径，对应已实现与未实现部分。</p>
+    <div class="grid2">
+      <div class="m-card">
+        <h3>浮动盈亏</h3>
+        <div class="fx">浮动盈亏 ＝ 持仓市值 − 持仓成本 ＝ Q<sub>t</sub> × (P<sub>t</sub> − C<sub>t</sub>)</div>
+        <p>股票 / 基金 P<sub>t</sub> 取除息价；债券 P<sub>t</sub> 取净价。</p>
+      </div>
+      <div class="m-card">
+        <h3>已实现收益</h3>
+        <div class="fx">已实现收益 ＝ N<sub>sell,t</sub> × (V<sub>sell,t</sub> − C<sub>t</sub> − f<sub>sell,t</sub>) ＋ 分红总额 ＋ 实收利息</div>
+        <p>股票 / 基金取分红（总额口径），债券取实际收到的利息。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">五、</span>权重、收益率与贡献</h2>
+    <p class="hint">这三个指标是「区间收益率」与「收益贡献」两列的计算基础，区别只在分母。</p>
+    <div class="grid3">
+      <div class="m-card accent">
+        <h3>子权重</h3>
+        <div class="fx">底层资产上期市值 ÷ 该产品期初净资产</div>
+        <p>回答「仓位有多重」，合计为 100%。</p>
+      </div>
+      <div class="m-card accent">
+        <h3>子收益率</h3>
+        <div class="fx">该底层资产日收益 ÷ 该底层资产上期市值</div>
+        <p>回答「这个标的自己赚了几个点」，不可跨标的加总。</p>
+      </div>
+      <div class="m-card accent">
+        <h3>子贡献</h3>
+        <div class="fx">该底层资产日收益 ÷ 该产品期初净资产</div>
+        <p>回答「它把产品收益拉动几个百分点」，可加总，合计即产品同期收益率。</p>
+      </div>
+    </div>
+    <p class="note-line">关系：<b>子贡献 ＝ 子权重 × 子收益率</b>。系统资产明细页的「区间收益率」用标的自身期初市值为分母，「收益贡献」用专户净资产为分母，与上述定义一一对应。</p>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">六、</span>收益归因递推</h2>
+    <p class="hint">多期归因采用逐期递推，保证各资产累计贡献之和严格等于组合累计收益率。</p>
+    <div class="fx">C<sub>k</sub><sup>(t)</sup> ＝ C<sub>k</sub><sup>(t−1)</sup> × (1 ＋ r<sub>t</sub>) ＋ c<sub>k,t</sub></div>
+    <div class="fx">1 ＋ R<sup>(t)</sup> ＝ (1 ＋ R<sup>(t−1)</sup>) × (1 ＋ r<sub>t</sub>)</div>
+    <div class="fx">Σ<sub>k</sub> C<sub>k</sub><sup>(t)</sup> ＝ R<sup>(t)</sup></div>
+    <p class="note-line">C<sub>k</sub> 为第 k 类资产截至 t 期的累计贡献；r<sub>t</sub> 为第 t 期组合收益；c<sub>k,t</sub> 为第 k 类资产当期收益。初始条件 C<sub>k</sub><sup>(0)</sup> ＝ 0、R<sup>(0)</sup> ＝ 0。</p>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">七、</span>常规风险收益指标</h2>
+    <p class="hint">净值类指标统一使用复权单位净值；首尾日若非净值公布日，向前取最近一个公布日。</p>
+    <div class="grid2">
+      <div class="m-card">
+        <h3>区间收益率</h3>
+        <div class="fx">期末复权净值 ÷ 期初复权净值 − 1</div>
+        <p>等价于区间复权单位净值增长率＝(区间尾日净值 − 区间首日上一交易日净值) ÷ 区间首日上一交易日净值。</p>
+      </div>
+      <div class="m-card">
+        <h3>年化收益率</h3>
+        <div class="fx">((1 ＋ R)<sup>N ÷ 区间天数</sup> − 1) × 100%</div>
+        <p>N 与区间天数须同口径：交易日口径 N 取 250，自然日口径取 365；目前统一按 250。</p>
+      </div>
+      <div class="m-card">
+        <h3>年化波动率</h3>
+        <div class="fx">收益标准差 × √n</div>
+        <p>日频 n ＝ 250；周频 52；月频 12；年频 1。</p>
+      </div>
+      <div class="m-card">
+        <h3>夏普比率</h3>
+        <div class="fx">(年化收益率 − 年化无风险收益率) ÷ 年化波动率</div>
+        <p>无风险利率口径需与产品期限匹配，暂按统一参数。</p>
+      </div>
+      <div class="m-card">
+        <h3>最大回撤</h3>
+        <div class="fx">Min{ (X<sub>i</sub> − X<sub>j</sub>) ÷ X<sub>j</sub> × 100% }，i &gt; j</div>
+        <p>X 取所选区间内全部复权单位净值，X<sub>i</sub> 的净值日期必须在 X<sub>j</sub> 之后。</p>
+      </div>
+      <div class="m-card">
+        <h3>卡玛比率 Calmar</h3>
+        <div class="fx">统计区间年化收益率 ÷ |统计区间最大回撤|</div>
+        <p>统计区间包含区间首日与尾日。</p>
+      </div>
+      <div class="m-card">
+        <h3>到期收益率 YTM</h3>
+        <div class="fx">债券全价 ＝ Σ 未来现金流 ÷ (1 ＋ YTM)<sup>(现金流发生日 − 分析日期) ÷ 365</sup></div>
+        <p>按实际现金流与剩余期限折现求解。</p>
+      </div>
+      <div class="m-card">
+        <h3>久期与 DV01</h3>
+        <div class="fx">麦氏久期 ＝ Σ 现金流折现值 × (现金流发生日 − 分析日期) ÷ 365 ÷ 债券全价<br>修正久期 ＝ 麦氏久期 ÷ (1 ＋ YTM)<br>DV01 ＝ 修正久期 × 债券全价 × 0.0001</div>
+        <p>用于衡量利率变动 1bp 时的净值影响。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">附、</span>符号约定</h2>
+    <div class="table-wrap">
+      <table class="sym">
+        <thead><tr><th>符号</th><th>含义</th></tr></thead>
+        <tbody>
+          <tr><td>t / t−1</td><td>当前估值日 / 估值表中上一个估值日</td></tr>
+          <tr><td>P<sub>t</sub> / P<sub>t−1</sub></td><td>当前日 / 前一日行情价</td></tr>
+          <tr><td>Q<sub>t</sub> / Q<sub>t−1</sub></td><td>当前日（日末）/ 前一日数量</td></tr>
+          <tr><td>V<sub>sell,t</sub></td><td>当日卖出加权成交均价；逐笔计算时可不取均价，逐笔关注</td></tr>
+          <tr><td>V<sub>buy,t</sub></td><td>当日正常买入加权成交均价</td></tr>
+          <tr><td>V<sub>reinvest,t</sub></td><td>当日分红再投买入均价</td></tr>
+          <tr><td>N<sub>buy,t</sub> / N<sub>sell,t</sub></td><td>当日买入 / 卖出成交数量合计</td></tr>
+          <tr><td>N<sub>reinvest,t</sub></td><td>当日分红再投买入数量</td></tr>
+          <tr><td>D<sub>t</sub></td><td>当前日每股现金分红金额（公告或估值表，税前 / 税后按实际口径）</td></tr>
+          <tr><td>f<sub>buy,t</sub> / f<sub>sell,t</sub> / f<sub>reinvest,t</sub></td><td>当日买入 / 卖出 / 分红再投单位费用；当前文件费用列为 0 或 NA，暂按 0 计算</td></tr>
+          <tr><td>C<sub>t</sub></td><td>单位持仓成本</td></tr>
+          <tr><td>I<sub>t</sub></td><td>当日利息</td></tr>
+          <tr><td>r<sub>t</sub> / R<sup>(t)</sup></td><td>第 t 期组合收益 / 截至 t 期组合累计收益率</td></tr>
+          <tr><td>C<sub>k</sub><sup>(t)</sup> / c<sub>k,t</sub></td><td>第 k 类资产累计贡献 / 当期收益</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  </div>
+
 </div>
+
+<script>
+(function(){
+  var btns=document.querySelectorAll('.tabs button');
+  function show(key){
+    btns.forEach(function(b){
+      var on=b.dataset.tab===key;
+      b.classList.toggle('active',on);
+      b.setAttribute('aria-selected',on?'true':'false');
+    });
+    document.querySelectorAll('.tab-panel').forEach(function(p){
+      p.classList.toggle('active',p.id==='tab-'+key);
+    });
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.tab)})});
+})();
+</script>
 </body>
+
 </html>
