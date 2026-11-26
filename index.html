@@ -8135,14 +8135,14 @@ function renderFundAsset(snap,mode,label){
       '<div class="v3-stat"><span>'+label+'数量</span><strong>'+sub.funds.length+' 只</strong></div>'+
       '<div class="v3-stat"><span>期末市值（元）</span><strong>'+num(sub.fundClose,2)+'</strong></div>'+
       '<div class="v3-stat"><span>区间收益（元）</span><strong class="'+cls(income)+'">'+num(income,2)+'</strong></div>'+
-      '<div class="v3-stat"><span>区间收益率</span><strong class="'+(open?cls(income/open*100):'')+'">'+(open?pct(income/open*100):'—')+'</strong></div>'+
+      '<div class="v3-stat"><span>区间收益率（%）</span><strong class="'+(open?cls(income/open*100):'')+'">'+(open?pct(income/open*100):'—')+'</strong></div>'+
     '</div>';
   var list='<div class="v3-card"><div class="v3-toolbar">'+
       windClassify(l1map)+
       '<label>搜索<input id="v3-fund-q" placeholder="基金代码或名称" value="'+esc(stateV3.q)+'"></label>'+
       '<div class="v3-basis-switch"><span>收益口径</span>'+fundBasisSwitch()+'</div>'+
       '<span class="v3-count" id="v3-fund-count">'+assetCountText(allRows)+'</span>'+
-    '</div><div class="v3-table-wrap"><table class="v3-table left2 fundtable"><thead><tr>'+sortTh('funds','code','基金代码')+sortTh('funds','name','基金名称')+sortTh('funds','type','工具类型')+sortTh('funds','l2','Wind 二级')+sortTh('funds','close','期末市值（元）')+sortTh('funds','weight','占'+label+'组合')+fundBasisThs()+sortTh('funds','income','区间总收益（元）')+sortTh('funds','ret','区间收益率')+sortTh('funds','contrib','收益贡献（%）')+'</tr></thead><tbody id="v3-fund-rows">'+fundRowsHtml(ps.rows,allRows,sub)+'</tbody></table></div>'+
+    '</div><div class="v3-table-wrap"><table class="v3-table left2 fundtable"><thead><tr>'+sortTh('funds','code','基金代码')+sortTh('funds','name','基金名称')+sortTh('funds','type','工具类型')+sortTh('funds','l2','Wind 二级')+sortTh('funds','close','期末市值（元）')+sortTh('funds','weight','占'+label+'组合（%）')+fundBasisThs()+sortTh('funds','income','区间总收益（元）')+sortTh('funds','ret','区间收益率（%）')+sortTh('funds','contrib','收益贡献（%）')+'</tr></thead><tbody id="v3-fund-rows">'+fundRowsHtml(ps.rows,allRows,sub)+'</tbody></table></div>'+
     '<div class="v3-pager" id="v3-fund-pager">'+pagerHtml('funds',ps.page,ps.pages,allRows.length)+'</div><div class="v3-note">收益率＝区间总收益 ÷ 期初市值；期初为 0 的新建仓'+label+'显示「—」；期末市值取最新持仓快照，收益按所选区间折算。</div></div>';
   return head+(subNote?'<p class="v3-sub">'+subNote+'</p>':'')+stats+(view==='chart'?fundChartView(sub,label):list);
 }
@@ -8184,7 +8184,7 @@ function renderBonds(snap){
   var totalIncome=sum(allRows,function(x){return x.total});
   var stats='<div class="v3-stats">'+
     '<div class="v3-stat"><span>直投债券市值（元）</span><strong>'+num(close,2)+'</strong></div>'+
-    '<div class="v3-stat"><span>占专户净资产</span><strong>'+(snap.nav?(close/snap.nav*100).toFixed(2)+'%':'—')+'</strong></div>'+
+    '<div class="v3-stat"><span>占专户净资产（%）</span><strong>'+(snap.nav?(close/snap.nav*100).toFixed(2)+'%':'—')+'</strong></div>'+
     '<div class="v3-stat"><span>区间总收益（元）</span><strong class="'+cls(totalIncome)+'">'+num(totalIncome,2)+'</strong></div>'+
     '<div class="v3-stat"><span>债券只数</span><strong>'+allRows.length+' 只</strong></div>'+
   '</div>';
@@ -8203,7 +8203,7 @@ function renderBonds(snap){
   var table='<div class="v3-card"><div class="v3-toolbar">'+typeSel+
       '<label>搜索<input id="v3-bond-q" placeholder="债券代码或名称" value="'+esc(stateV3.bondQ||'')+'"></label>'+
       '<span class="v3-count" id="v3-bond-count">'+(q?'筛选后 ':'共 ')+rows.length+' 只</span>'+
-    '</div><div class="v3-table-wrap"><table class="v3-table left2"><thead><tr><th>代码</th><th>名称</th><th>券种</th><th>评级</th><th>剩余期限</th><th>期初市值（元）</th><th>期末市值（元）</th><th>持有涨跌（元）</th><th>买卖交易（元）</th><th>利息收入（元）</th><th>区间总收益（元）</th><th>区间收益率</th><th>收益贡献（%）</th></tr></thead><tbody id="v3-bond-rows">'+bondTableRows(rows)+'</tbody></table></div></div>';
+    '</div><div class="v3-table-wrap"><table class="v3-table left2"><thead><tr><th>代码</th><th>名称</th><th>券种</th><th>评级</th><th>剩余期限</th><th>期初市值（元）</th><th>期末市值（元）</th><th>持有涨跌（元）</th><th>买卖交易（元）</th><th>利息收入（元）</th><th>区间总收益（元）</th><th>区间收益率（%）</th><th>收益贡献（%）</th></tr></thead><tbody id="v3-bond-rows">'+bondTableRows(rows)+'</tbody></table></div></div>';
   var list=table,charts='<div class="v3-grid-2 even">'+profit+bondStructureCard('券种分布',bondStructure(allRows,'type'),'按期末市值统计直投债券的券种占比。')+'</div>'+'<div class="v3-grid-2 even">'+bondStructureCard('外部评级',bondStructure(allRows,'rating'),'按期末市值统计直投债券的评级占比。')+concentration+'</div>';
   var head='';
   var sub='';
@@ -8253,15 +8253,15 @@ function renderStocks(snap){
       '<div class="v3-stat"><span>股票数量</span><strong>'+snap.stocks.length+' 只</strong></div>'+
       '<div class="v3-stat"><span>期末市值（元）</span><strong>'+num(snap.stockClose,2)+'</strong></div>'+
       '<div class="v3-stat"><span>区间收益（元）</span><strong class="'+cls(snap.stockIncome)+'">'+num(snap.stockIncome,2)+'</strong></div>'+
-      '<div class="v3-stat"><span>区间收益率</span><strong class="'+cls(ret)+'">'+pct(ret)+'</strong></div>'+
-      '<div class="v3-stat"><span>前五大集中度（股票）</span><strong>'+top5Rate.toFixed(1)+'%</strong></div>'+
+      '<div class="v3-stat"><span>区间收益率（%）</span><strong class="'+cls(ret)+'">'+pct(ret)+'</strong></div>'+
+      '<div class="v3-stat"><span>前五大集中度（股票，%）</span><strong>'+top5Rate.toFixed(1)+'%</strong></div>'+
     '</div>';
   var list='<div class="v3-card"><div class="v3-toolbar">'+
       '<label>申万一级行业<select id="v3-stock-industry"><option value="">全部行业</option>'+inds.map(function(x){return '<option value="'+esc(x)+'"'+(stateV3.industry===x?' selected':'')+'>'+esc(x)+'</option>'}).join('')+'</select></label>'+
       '<label>搜索<input id="v3-stock-q" placeholder="股票代码或名称" value="'+esc(stateV3.q)+'"></label>'+
       '<div class="v3-basis-switch"><span>收益口径</span>'+stockBasisSwitch()+'</div>'+
       '<span class="v3-count" id="v3-stock-count">'+assetCountText(allRows)+'</span>'+
-    '</div><div class="v3-table-wrap"><table class="v3-table left2 stocktable"><thead><tr>'+sortTh('stocks','code','股票代码')+sortTh('stocks','name','股票名称')+sortTh('stocks','industry','申万一级行业')+sortTh('stocks','close','期末市值（元）')+sortTh('stocks','weight','占股票组合')+stockBasisThs()+sortTh('stocks','income','区间总收益（元）')+sortTh('stocks','ret','区间收益率')+sortTh('stocks','contrib','收益贡献（%）')+'</tr></thead><tbody id="v3-stock-rows">'+stockRowsHtml(ps.rows,allRows,snap)+'</tbody></table></div>'+
+    '</div><div class="v3-table-wrap"><table class="v3-table left2 stocktable"><thead><tr>'+sortTh('stocks','code','股票代码')+sortTh('stocks','name','股票名称')+sortTh('stocks','industry','申万一级行业')+sortTh('stocks','close','期末市值（元）')+sortTh('stocks','weight','占股票组合（%）')+stockBasisThs()+sortTh('stocks','income','区间总收益（元）')+sortTh('stocks','ret','区间收益率（%）')+sortTh('stocks','contrib','收益贡献（%）')+'</tr></thead><tbody id="v3-stock-rows">'+stockRowsHtml(ps.rows,allRows,snap)+'</tbody></table></div>'+
     '<div class="v3-pager" id="v3-stock-pager">'+pagerHtml('stocks',ps.page,ps.pages,allRows.length)+'</div><div class="v3-note">权重＝个股市值 ÷ 股票组合市值；收益贡献＝个股收益 ÷专户净资产。点击行查看持有/交易拆分；市值取最新快照，收益按所选区间折算。</div></div>';
   var charts='<div class="v3-grid-2 even">'+
       '<div class="v3-card"><div class="v3-card-head"><h3>行业暴露</h3><span class="v3-chip">申万一级行业</span></div><p class="sub">按申万一级行业汇总，占股票组合市值比例；行业基准待接入。</p>'+snap.industry.map(function(x){
@@ -8575,8 +8575,8 @@ function refreshStocks(){
 }
 function stockBasisCols(){
   return (stateV3.stockBasis==='status')
-    ? [['float','浮动盈亏'],['realized','已实现收益']]
-    : [['hold','持有涨跌'],['trade','买卖价差收益'],['div','现金分红']];
+    ? [['float','浮动盈亏（元）'],['realized','已实现收益（元）']]
+    : [['hold','持有涨跌（元）'],['trade','买卖价差收益（元）'],['div','现金分红（元）']];
 }
 function stockBasisValue(x,key){
   if(key==='trade')return x.buyIncome+x.sellIncome;
@@ -8609,8 +8609,8 @@ function stockBasisSwitch(){
 }
 function fundBasisCols(){
   return (stateV3.fundBasis==='status')
-    ? [['float','浮动盈亏'],['realized','已实现收益']]
-    : [['hold','持有涨跌'],['trade','买卖价差收益'],['div','现金分红']];
+    ? [['float','浮动盈亏（元）'],['realized','已实现收益（元）']]
+    : [['hold','持有涨跌（元）'],['trade','买卖价差收益（元）'],['div','现金分红（元）']];
 }
 function fundBasisValue(x,key){
   if(key==='trade')return x.buy+x.sell;
