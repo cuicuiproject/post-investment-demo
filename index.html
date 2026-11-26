@@ -6487,7 +6487,7 @@ init();
 <div class="stock-analysis-grid">
   <div>
     <div class="panel bond-table-panel">
-      <div class="head"><div><h2 style="margin:0">跨账户同券明细</h2></div><div class="bond-head-tools"><div class="ov-view-switch" role="group" aria-label="展示方式"><button type="button" class="active" data-bond-view="list">列表</button><button type="button" data-bond-view="chart">图表</button></div></div></div>
+      <div class="head"><div><h2 style="margin:0">跨账户同券明细</h2></div></div>
       <div class="stock-analysis-table-wrap"><table class="stock-analysis-table"><thead><tr><th>债券代码</th><th>债券名称</th><th>券种</th><th>评级</th><th>到期日</th><th>修正久期</th><th>涉及专户</th><th>期末市值（万元）</th><th>占债券市值</th><th>区间收益（万元）</th><th>区间收益率</th></tr></thead><tbody>
         <tr><td>240203.IB</td><td>24国开03</td><td>政策性金融债</td><td>AAA</td><td>2029-04-15</td><td>3.12</td><td>3 户</td><td>1,286.40</td><td>14.9%</td><td class="up">+14.97</td><td class="up">+1.16%</td></tr>
         <tr><td>230018.IB</td><td>23附息国债18</td><td>国债</td><td>AAA</td><td>2028-09-20</td><td>2.86</td><td>2 户</td><td>980.25</td><td>11.3%</td><td class="up">+7.12</td><td class="up">+0.73%</td></tr>
@@ -6513,58 +6513,7 @@ init();
     </div>
   </div>
 
-  <div class="stock-analysis-side" id="bond-chart-view" style="display:none">
-    <div class="panel stock-analysis-card"><h3>收益拆解</h3><p>区间收益＝票息＋市价变动＋买卖价差，用来判断收益是"持有型"还是"交易型"。</p>
-      <div class="bond-stack"><i style="width:49.6%;background:#2f83b8"></i><i style="width:42.1%;background:#d3a125"></i><i style="width:8.3%;background:#76b8a0"></i></div>
-      <div class="bond-legend">
-        <span><i style="background:#2f83b8"></i>票息收入 +25.15 万 · 49.6%</span>
-        <span><i style="background:#d3a125"></i>市价变动 +21.34 万 · 42.1%</span>
-        <span><i style="background:#76b8a0"></i>买卖价差 +4.18 万 · 8.3%</span>
-      </div>
-      <p class="bond-note">票息占近一半，收益以持有为主；市价变动已接近票息，说明区间内利率下行带来的浮盈是主要增量。</p>
-    </div>
-
-    <div class="panel stock-analysis-card"><h3>专户对比</h3><p>柱高为债券市值（万元），标注为该专户区间收益率。</p>
-      <div class="bond-cols">
-        <div class="bond-col"><span class="bond-col-bar" style="height:100%"></span><b>5,120.00</b><small>专户A<br>+0.76%</small></div>
-        <div class="bond-col"><span class="bond-col-bar" style="height:47%"></span><b>2,386.50</b><small>专户B<br>+0.41%</small></div>
-        <div class="bond-col"><span class="bond-col-bar" style="height:22%"></span><b>1,135.85</b><small>专户C<br>+0.21%</small></div>
-      </div>
-      <p class="bond-note">专户A 规模最大、收益最好；专户C 规模最小但久期最长，收益率反而不高——久期没有换来收益，是本期最需要解释的点。</p>
-    </div>
-
-    <div class="panel stock-analysis-card"><h3>券种结构</h3><p>按期末市值统计，债券基金与债券ETF 不计入本页。</p>
-      <div class="stock-industry-list">
-        <div class="stock-industry-row"><span>政策性金融债</span><span class="stock-industry-track"><i style="width:100%"></i></span><strong>39.2%</strong></div>
-        <div class="stock-industry-row"><span>国债</span><span class="stock-industry-track"><i style="width:46%"></i></span><strong>17.9%</strong></div>
-        <div class="stock-industry-row"><span>中期票据</span><span class="stock-industry-track"><i style="width:33%"></i></span><strong>13.0%</strong></div>
-        <div class="stock-industry-row"><span>地方政府债</span><span class="stock-industry-track"><i style="width:26%"></i></span><strong>10.1%</strong></div>
-        <div class="stock-industry-row"><span>企业债</span><span class="stock-industry-track"><i style="width:21%"></i></span><strong>8.2%</strong></div>
-        <div class="stock-industry-row"><span>短期融资券</span><span class="stock-industry-track"><i style="width:19%"></i></span><strong>7.3%</strong></div>
-        <div class="stock-industry-row"><span>可转债</span><span class="stock-industry-track"><i style="width:8%"></i></span><strong>3.0%</strong></div>
-        <div class="stock-industry-row"><span>同业存单</span><span class="stock-industry-track"><i style="width:3%"></i></span><strong>1.2%</strong></div>
-      </div>
-    </div>
-
-    <div class="panel stock-analysis-card"><h3>信用评级</h3><p>外部评级，用于观察评级下沉程度与集中风险。</p>
-      <div class="stock-industry-list">
-        <div class="stock-industry-row"><span>AAA</span><span class="stock-industry-track"><i style="width:100%"></i></span><strong>81.5%</strong></div>
-        <div class="stock-industry-row"><span>AA+</span><span class="stock-industry-track"><i style="width:20%"></i></span><strong>16.2%</strong></div>
-        <div class="stock-industry-row"><span>AA</span><span class="stock-industry-track"><i style="width:3%"></i></span><strong>2.3%</strong></div>
-      </div>
-      <p class="bond-note">AA+ 及以下合计 18.5%，其中 22临港债 512.60 万元为最大非 AAA 持仓。</p>
-    </div>
-
-    <div class="panel stock-analysis-card"><h3>剩余期限</h3><p>按到期日分档，与修正久期配合判断利率敏感度。</p>
-      <div class="stock-industry-list">
-        <div class="stock-industry-row"><span>1 年以内</span><span class="stock-industry-track"><i style="width:86%"></i></span><strong>35.3%</strong></div>
-        <div class="stock-industry-row"><span>1–3 年</span><span class="stock-industry-track"><i style="width:100%"></i></span><strong>41.2%</strong></div>
-        <div class="stock-industry-row"><span>3–5 年</span><span class="stock-industry-track"><i style="width:39%"></i></span><strong>15.9%</strong></div>
-        <div class="stock-industry-row"><span>5–10 年</span><span class="stock-industry-track"><i style="width:18%"></i></span><strong>7.6%</strong></div>
-      </div>
-      <p class="bond-note">3 年以内占 76.5%，组合整体偏短久期；5 年以上仅 7.6%，主要来自 24地方债01 与 23国债27。</p>
-    </div>
-  </div>
+  
 </div>
 
 </section>
@@ -7839,11 +7788,11 @@ function fundCatTable(snap,rows){
     return '<tr><td><span class="v3-fundcat-name" title="'+esc(x.name)+'">'+esc(x.name.replace(/基金$/,''))+'</span><span class="v3-fundcat-count">'+x.count+' 只</span><span class="v3-fundcat-track"><i style="width:'+Math.max(0,Math.min(100,x.share)).toFixed(1)+'%"></i></span></td><td>'+wanAbs(x.close)+'</td><td>'+x.share.toFixed(1)+'%</td><td class="'+cls(x.income)+'">'+wan(x.income)+'</td><td class="'+(x.retPct==null?'':cls(x.retPct))+'">'+(x.retPct==null?'—':pct(x.retPct))+'</td></tr>';
   }).join('');
   var total='<tr class="v3-total"><td><span class="v3-fundcat-name">合计</span><span class="v3-fundcat-count">'+snap.funds.length+' 只</span></td><td>'+wanAbs(snap.fundClose)+'</td><td>100.0%</td><td class="'+cls(snap.fundIncome)+'">'+wan(snap.fundIncome)+'</td><td class="'+(totalRet==null?'':cls(totalRet))+'">'+(totalRet==null?'—':pct(totalRet))+'</td></tr>';
-  return '<div class="v3-table-wrap" style="border:0"><table class="v3-fundcat-table"><colgroup><col style="width:36%"><col style="width:16%"><col style="width:12%"><col style="width:19%"><col style="width:17%"></colgroup><thead><tr><th>分类</th><th>市值（万）</th><th>占基金组合</th><th>收益（万）</th><th>收益率</th></tr></thead><tbody>'+body+total+'</tbody></table></div>';
+  return '<div class="v3-table-wrap" style="border:0"><table class="v3-fundcat-table"><colgroup><col style="width:36%"><col style="width:16%"><col style="width:12%"><col style="width:19%"><col style="width:17%"></colgroup><thead><tr><th>分类</th><th>市值（万元）</th><th>占基金组合（%）</th><th>收益（万元）</th><th>区间收益率（%）</th></tr></thead><tbody>'+body+total+'</tbody></table></div>';
 }
 
 function allocDetailTable(rows,snap,label){
-  return '<div class="v3-table-wrap"><table class="v3-table"><thead><tr><th>'+label+'</th><th>期初市值（元）</th><th>期末市值（元）</th><th>市值变化（元）</th><th>占净资产</th><th>总收益金额（元）</th></tr></thead><tbody>'+
+  return '<div class="v3-table-wrap"><table class="v3-table"><thead><tr><th>'+label+'</th><th>期初市值（元）</th><th>期末市值（元）</th><th>市值变化（元）</th><th>占净资产（%）</th><th>总收益金额（元）</th></tr></thead><tbody>'+
     rows.map(function(x){
       var d=x.close-x.open;
       return '<tr><td>'+x.label+(x.sub?'<span class="v3-alloc-sub">'+x.sub+'</span>':'')+'</td><td>'+num(x.open,2)+'</td><td>'+num(x.close,2)+'</td><td class="'+cls(d)+'">'+num(d,2)+'</td><td>'+(snap.nav?x.close/snap.nav*100:0).toFixed(2)+'%</td><td class="'+cls(x.income)+'">'+num(x.income,2)+'</td></tr>';
@@ -7891,9 +7840,9 @@ function renderAllocation(snap){
   ];
   var invested=snap.nav-snap.cashCat.close;
   var detailCard='<div class="v3-card"><div class="v3-card-head"><h3>配置明细</h3></div>'+allocDetailTable(toolDetail,snap,'资产类别')+'</div>';
-  var topCard='<div class="v3-card"><h3>前十大持仓</h3><p class="sub">基金、股票与直投债券合并排序，均为直接持仓、未穿透基金底层；占比统一以专户净资产为分母。</p><div class="v3-table-wrap"><table class="v3-table left2 top10"><thead><tr><th>#</th><th>名称</th><th>类型</th><th>期末市值（元）</th><th>占净资产</th><th>区间收益（元）</th><th>收益率</th></tr></thead><tbody>'+
+  var topCard='<div class="v3-card"><h3>前十大持仓</h3><p class="sub">基金、股票与直投债券合并排序，均为直接持仓、未穿透基金底层；占比统一以专户净资产为分母。</p><div class="v3-table-wrap"><table class="v3-table left2 top10"><thead><tr><th>#</th><th>名称</th><th>类型</th><th>期初市值（元）</th><th>期末市值（元）</th><th>占净资产（%）</th><th>区间收益（元）</th><th>区间收益率（%）</th></tr></thead><tbody>'+
       top.map(function(x,i){
-        return '<tr><td>'+(i+1)+'</td><td class="name" title="'+esc(x.name)+'">'+esc(x.name)+'</td><td>'+x.type+' · '+esc(x.sub)+'</td><td>'+num(x.close,2)+'</td><td>'+(snap.nav?x.close/snap.nav*100:0).toFixed(2)+'%</td><td class="'+cls(x.total)+'">'+num(x.total,2)+'</td><td class="'+(x.retPct==null?'':cls(x.retPct))+'">'+(x.retPct==null?'—':pct(x.retPct))+'</td></tr>';
+        return '<tr><td>'+(i+1)+'</td><td class="name" title="'+esc(x.name)+'">'+esc(x.name)+'</td><td>'+x.type+' · '+esc(x.sub)+'</td><td>'+num(x.open,2)+'</td><td>'+num(x.close,2)+'</td><td>'+(snap.nav?x.close/snap.nav*100:0).toFixed(2)+'%</td><td class="'+cls(x.total)+'">'+num(x.total,2)+'</td><td class="'+(x.retPct==null?'':cls(x.retPct))+'">'+(x.retPct==null?'—':pct(x.retPct))+'</td></tr>';
       }).join('')+'</tbody></table></div></div>';
   var catCard='<div class="v3-card"><div class="v3-card-head"><h3>基金分类收益</h3>'+fcatTabs+'</div><p class="sub">按 Wind '+(fcat==='l1'?'一级':'二级')+'分类汇总；占比为占基金组合，基金组合含货币基金。</p>'+fundCatTable(snap,fcats)+'</div>';
   var holdFundCount=(snap.funds||[]).length,holdStockCount=(snap.stocks||[]).length;
@@ -11025,24 +10974,6 @@ if(document.getElementById('post')&&document.getElementById('post').classList.co
   },400);
   setTimeout(function(){clearInterval(timer)},20000);
 
-  function setBondView(v){
-    var root=document.getElementById('bond-analysis');if(!root)return;
-    var grid=root.querySelector('.stock-analysis-grid');
-    var list=grid?grid.firstElementChild:null;
-    var chart=document.getElementById('bond-chart-view');
-    var isList=(v!=='chart');
-    if(list)list.style.display=isList?'':'none';
-    if(chart)chart.style.display=isList?'none':'grid';
-    root.querySelectorAll('[data-bond-view]').forEach(function(b){
-      var on=isList?(b.dataset.bondView==='list'):(b.dataset.bondView==='chart');
-      b.classList.toggle('active',on);
-      b.setAttribute('aria-selected',on?'true':'false');
-    });
-  }
-  document.addEventListener('click',function(e){
-    var b=e.target.closest?e.target.closest('[data-bond-view]'):null;
-    if(b){e.preventDefault();setBondView(b.dataset.bondView);}
-  });
 })();
 </script>
 
