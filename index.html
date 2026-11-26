@@ -7825,7 +7825,7 @@ function renderReturns(snap){
     '</div>'+
     '<div class="v3-grid-2 even">'+
       card('bond','债券直投收益','持有涨跌 ＋ 买卖价差收益 ＋ 利息收入 ＝ 直投债券的区间收益；不含债券基金 / 债券 ETF。',pBond,bdInc,'利息收入')+
-      card('stock','股票直投收益','持仓涨跌 ＋ 买卖价差收益 ＋ 现金分红 ＝ 直投股票的区间收益；分红按行业模拟估算。',pStk,stkInc)+
+      card('stock','股票直投收益','持仓涨跌 ＋ 买卖价差收益 ＋ 现金分红 ＝ 直投股票的区间收益。',pStk,stkInc)+
     '</div>'+
     '<div class="v3-card"><div class="v3-card-head"><h3>月度收益率</h3></div><p class="sub">按年份展示每月组合收益与超额收益（超额＝组合−基准），年份行右侧为全年汇总；悬浮单元格可查看当月基准与超额。</p>'+mm+'</div>'+
     '<div class="v3-card"><h3>回撤走势</h3><div class="v3-legend"><span><i style="background:#0b8a63"></i>组合（绿色实线）</span><span><i style="background:#6f8194"></i>基准（灰色虚线）</span></div><p class="sub">组合最大回撤 '+pct(snap.met.mdd)+'，基准 '+pct(snap.met.bmdd)+'。</p><div class="v3-chart">'+ddChart(snap)+'</div></div>';
